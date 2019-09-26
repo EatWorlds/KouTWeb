@@ -1,6 +1,6 @@
 <template>
   <header class="navbar navbar-fixed-top header_bg">
-    <div class="container">
+    <div class="container-fluid">
       <!-- logo -->
       <div class="navbar-header">
         <img class="img-fluid" style="height:80px" src="../../../assets/images/logo.png" alt="">
@@ -32,47 +32,191 @@
             <a href="#">模板</a>
           </li>
           <li class="active">
+            <a href="#">专题套装</a>
+          </li>
+          <li class="active">
+            <a href="#">|</a>
+          </li>
+          <li class="active" >
+            <a href="#" style="color:#2254f4;font-weight:bold;">智能抠图</a>
+          </li>
+          <li class="active">
             <a href="#">联系我们</a>
           </li>
         </ul>
         <!-- Login Regist -->
+        <div class="header_intro">
+           <!-- <img src="../../../assets/images/introduce.png" srcset="https://cdn.dancf.com/gaodingx/www/image/video3x_8dd6639b.png 3x" alt="新手教程" class="header_novice"> -->
+        </div>
         <div class="header_login">
-          <button class="btn btn-primary" type="button">登录</button>
-          <button class="btn btn-primary" type="button">注册</button>
+          <div class="btn_grounp">
+            <button 
+              data-toggle="modal" 
+              data-target="#loginModel" 
+              class="btn btn-primary btn-login" 
+              type="button" 
+              @click="login">登录</button>
+            <button 
+              data-toggle="modal" 
+              data-target="registeredModel" 
+              class="btn btn-primary btn-registered" 
+              type="button"
+              @click="registereted">注册</button>
+          </div>
       </div>
       </div>
       <!-- end nav -->
+    </div>
+
+    <!-- 模态框（Modal） -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="model model_login_title">
+           <h3>账号密码登录</h3>
+          <div class="modal-body">
+             <form>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">邮箱</label>
+                  <input type="email" class="form-control" id="InputEmail1" placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                  <label for="exampleInputPassword1">密码</label>
+                  <input type="password" class="form-control" id="InputPassword1" placeholder="请输入6-30位密码">
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-default btn_login">登录</button>
+                </div>
+            </form>
+          </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal -->
     </div>
   </header>
 </template>
 
 <script>
+
 export default {
-  name: "HomeHeader"
+  name: "HomeHeader",
+  methods: {
+    // 登录
+    login() {
+      $('#myModal').modal({
+        keyboard: true
+      })
+      $(".modal-backdrop").css("z-index","0");
+    },
+
+    // 注册
+    registereted() {
+      
+    }
+  }
 };
+
+// $(function(){
+//   $('#loginModel').model({
+//     keyboard: true
+//   })
+// })
 </script>
 
 <style scoped>
+  /* 公共样式 */
+  a{
+    color:#000;
+  }
+
+  ul{
+    margin-left: 100px;
+  }
+
+  /* 单独样式 */
   .header_bg{
     background-color:#fff;
     height:80px;
+    margin-bottom: 0;
   }
+
   .navbar-nav>li>a{
     line-height: 80px;
     padding: 0 15px 0 15px;
   }
+
   .header_login{
+    position: relative;
     width: 100%;
     line-height: 80px;
   }
 
-  .header_login>button:first-child{
-    margin-left: 300px;
+  /* 新手教程 */
+  .header_novice{
+    width: 117px;
+    cursor: pointer;
   }
-   .header_login>button:last-child{
-    margin-left: 10px;
+
+  /* 登录注册 */
+  .btn_grounp{
+    position: absolute;
+    right: 100px;
   }
-  /* ul{
-    margin-left: 200px;
-  } */
+
+  .btn-registered{
+    margin-left:10px;
+  }
+
+  .header_login .btn-primary{
+    background: #2263fe;
+    color: #fff;
+  }
+
+  .modal-content{
+    position: relative;
+    top: 100px;
+    width: 450px;
+    height: 550px;
+  }
+
+  .model_login_title h3{
+    margin: 60px 0;
+    font-size: 25px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .form-group{
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .form-group label{
+    position: absolute;
+    left: 45px;
+    display: flex;
+    align-items: center;
+    font-size: 16px;
+    width: 50px;
+    height: 50px;
+  }
+
+  .form-group input{
+    width: 350px;
+    height: 50px;
+    padding-left: 60px;
+  }
+
+  .btn_login{
+    width: 350px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: #2263fe;
+  }
+
+
 </style>
