@@ -68,8 +68,8 @@
       <!-- end nav -->
     </div>
 
-    <!-- 模态框（Modal） -->
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <!-- 登录模态框（Modal） -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="model model_login_title">
@@ -78,14 +78,49 @@
              <form>
                 <div class="form-group">
                   <label for="exampleInputEmail1">邮箱</label>
-                  <input type="email" class="form-control" id="InputEmail1" placeholder="请输入邮箱">
+                  <input type="email" class="form-control inputTextStyle" id="InputEmail1" placeholder="请输入邮箱">
                 </div>
                 <div class="form-group">
                   <label for="exampleInputPassword1">密码</label>
-                  <input type="password" class="form-control" id="InputPassword1" placeholder="请输入6-30位密码">
+                  <input type="password" class="form-control inputTextStyle" id="InputPassword1" placeholder="请输入6-30位密码">
                 </div>
                 <div class="form-group">
                   <button type="submit" class="btn btn-default btn_login">登录</button>
+                </div>
+                <div class="form-group">
+                  <a href="#" @click="setZinex" data-toggle="modal" data-dismiss="modal" data-target="#registeredModel">没有账号？去注册</a>
+                </div>
+            </form>
+          </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal -->
+    </div>
+
+    <!-- 注册模态框（Modal） -->
+    <div class="modal fade" id="registeredModel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="model model_login_title">
+           <h3>注册账号</h3>
+          <div class="modal-body">
+             <form>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">邮箱</label>
+                  <input type="email" class="form-control inputTextStyle" id="InputCode" placeholder="请输入邮箱的验证码">
+                </div>
+                <div class="form-group">
+                  <input type="String " class="form-control inputNoCodeStyle" id="InputEmail1" placeholder="请输入邮箱">
+                  <button style="margin-left:20px;" class="btn" type="button">获取验证码</button>
+                </div>
+                <div class="form-group">
+                  <input type="password" class="form-control inputNoTextStyle" id="InputPassword1" placeholder="请输入6-30位密码">
+                </div>
+                <div class="form-group">
+                  <button type="submit" class="btn btn-default btn_login">注册</button>
+                </div>
+                <div class="form-group">
+                  <a href="#" data-toggle="modal" data-dismiss="modal" data-target="#loginModal">已有账号？去登陆</a>
                 </div>
             </form>
           </div>
@@ -103,16 +138,17 @@ export default {
   methods: {
     // 登录
     login() {
-      $('#myModal').modal({
+      $('#loginModal').modal({
         keyboard: true
       })
-      $(".modal-backdrop").css("z-index","0");
     },
 
     // 注册
     registereted() {
-      
-    }
+       $('#registeredModel').modal({
+        keyboard: true
+      })
+    },
   }
 };
 
@@ -138,6 +174,7 @@ export default {
     background-color:#fff;
     height:80px;
     margin-bottom: 0;
+    z-index: 1050;
   }
 
   .navbar-nav>li>a{
@@ -186,6 +223,7 @@ export default {
     text-align: center;
   }
 
+  /* 修改表单组的样式 */
   .form-group{
     position: relative;
     display: flex;
@@ -193,6 +231,7 @@ export default {
     justify-content: center;
   }
 
+  /* 改变变淡组下的 label 文字 */
   .form-group label{
     position: absolute;
     left: 45px;
@@ -203,12 +242,26 @@ export default {
     height: 50px;
   }
 
-  .form-group input{
+  /* 有 label 的输入框 */
+  .inputTextStyle{
     width: 350px;
     height: 50px;
     padding-left: 60px;
   }
 
+  /* 没有 label 的验证码框 */
+  .inputNoCodeStyle{
+    width: 230px;
+    height: 50px;
+  }
+
+  /* 没有 label 的输入框 */
+  .inputNoTextStyle{
+    width: 350px;
+    height: 50px;
+  }
+
+  /* 登录按钮 */
   .btn_login{
     width: 350px;
     height: 50px;
