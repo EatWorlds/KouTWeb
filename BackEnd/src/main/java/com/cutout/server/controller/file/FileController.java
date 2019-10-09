@@ -51,13 +51,14 @@ public class FileController {
 //    public ResponseBean fileUpload(@RequestParam("file") MultipartFile[] files) {
     public ResponseBean fileUpload(@RequestParam("file") MultipartFile files) {
         String message = messageCodeStorage.success_code;
+        Map<String,String> paths = null;
         try {
             if (StringUtils.isEmpty(files)) {
                 throw new MessageException(messageCodeStorage.user_upload_file_empty);
             }
 
             StringBuilder stringBuilder = new StringBuilder();
-            Map<String,String> paths = new HashMap<>();
+            paths = new HashMap<>();
 //            for (MultipartFile file : files) {
                 String fileName = files.getOriginalFilename();
 //                long fileSize = file.getSize();
@@ -73,7 +74,7 @@ public class FileController {
                 File localFile = new File(filePath);
                 files.transferTo(localFile);
 //                stringBuilder.append(localFile.getAbsolutePath()).append(",");
-                paths.put("email",localFile.getAbsolutePath());
+                paths.put("path",localFile.getAbsolutePath());
 //            }
 
 //            logger.info("sb = " + stringBuilder.toString());
@@ -87,7 +88,7 @@ public class FileController {
 
         }
 
-        return responseHelperUtil.returnMessage(message);
+        return responseHelperUtil.returnMessage(message,paths);
     }
 
     /**

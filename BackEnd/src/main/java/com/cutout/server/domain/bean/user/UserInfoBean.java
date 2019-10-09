@@ -54,7 +54,18 @@ public class UserInfoBean {
      */
     private String code;
 
+    /**
+     * 忘记密码，发送到邮箱的校验码
+     */
+    private String password_code;
+
+    /**
+     * 上传的图片列表
+     */
     private List<UserImgBean> userImgs;
 
+    /**
+     * 下载有效性，剩余有效次数、时间等
+     */
     private List<UserDownloadBean> userDownloads;
 }

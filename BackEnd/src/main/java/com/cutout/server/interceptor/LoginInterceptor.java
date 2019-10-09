@@ -17,6 +17,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         logger.info("==============================");
+
 //        Cookie[] cookies = request.getCookies();
 //        for (Cookie cookie:
 //             cookies) {

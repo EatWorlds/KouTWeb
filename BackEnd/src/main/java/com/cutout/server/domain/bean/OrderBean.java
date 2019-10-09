@@ -1,8 +1,8 @@
 package com.cutout.server.domain.bean;
 
+import com.cutout.server.domain.bean.product.ProductBean;
+import com.cutout.server.domain.bean.product.ProductDetailBean;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 public class OrderBean {
@@ -10,7 +10,7 @@ public class OrderBean {
     /**
      * 用户id
      */
-    private String userid;
+    private String userId;
 
     /**
      * 创建时间

@@ -55,4 +55,9 @@ public class MessageCodeStorage {
      */
     public static final String user_not_login_error="user_not_login_error|100009|用户未登录";
 
+    /**
+     * messagecode :100010  messagevalue :暂无产品信息
+     */
+    public static final String product_info_empty="product_info_empty|100010|暂无产品信息";
+
 }
