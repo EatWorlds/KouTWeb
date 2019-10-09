@@ -1,0 +1,150 @@
+package com.cutout.server.controller.user;
+
+
+import com.cutout.server.configure.exception.MessageException;
+import com.cutout.server.configure.message.MessageCodeStorage;
+import com.cutout.server.domain.bean.response.ResponseBean;
+import com.cutout.server.domain.bean.user.UserInfoBean;
+import com.cutout.server.model.UserInfoModel;
+import com.cutout.server.service.UserService;
+import com.cutout.server.utils.Bases;
+import com.cutout.server.utils.JwtTokenUtil;
+import com.cutout.server.utils.ResponseHelperUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+/**
+ *
+ * 2019-09-16
+ *
+ * @author dimple
+ *
+ * @RestController == @Controller + @ResponseBody，需要注意的是使用这个注解代表着整个类都是如此
+ *
+ * 当然 @Controller & @ResponseBody 还是可以使用的
+ *
+ */
+@RestController
+@RequestMapping("/v1")
+public class LoginController {
+    private Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+    @Autowired
+    private MessageCodeStorage messageCodeStorage;
+
+    @Autowired
+    private ResponseHelperUtil responseHelperUtil;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private Bases bases;
+
+    @Autowired
+    private UserInfoModel userInfoModel;
+
+    /**
+     * 用户登录，返回用户个人信息
+     *
+     * @param email
+     * @param password
+     * @return
+     */
+    @RequestMapping(value = "/user/login", method = RequestMethod.POST)
+    public ResponseBean login(@RequestParam String email, @RequestParam String password) {
+
+        String message = messageCodeStorage.success_code;
+        Map<String,String> tokenMap = null;
+        try {
+
+            // 用户有效性校验
+            userInfoModel.checkUserInfo(email,password);
+
+            // 验证用户信息是否存在
+            UserInfoBean userInfoBean = userService.getUserFromEmail(email);
+            logger.info("result ==" + userInfoBean);
+            if (userInfoBean == null) {
+                throw new MessageException(messageCodeStorage.user_not_exists_error);
+            }
+
+            // 验证密码是否正确
+            String pwd = userInfoBean.getPassword();
+            if (!password.equals(pwd)) {
+                throw new MessageException(messageCodeStorage.user_login_email_password_error);
+            }
+
+            String token = jwtTokenUtil.generateToken(userInfoBean);
+            // 创建token
+            tokenMap = new HashMap<>();
+            tokenMap.put("token",token);
+            tokenMap.put("email",email);
+
+
+//            Map<String,Object> result = jwtTokenUtil.verify(token,userInfoBean);
+//            // Mon Sep 23 17:46:33 CST 2019
+//            Date time = (Date)result.get("time");
+//            logger.info("time = " + (time.getTime()/1000));
+//
+//            logger.info(JSON.toJSONString(result));
+        }catch (MessageException messageException) {
+            message = messageException.getMessage();
+        } catch (Exception e) {
+            logger.error("LoginController login",e);
+        }
+
+        return responseHelperUtil.returnMessage(message,tokenMap);
+    }
+
+    /**
+     * 用户退出
+     *
+     * @param email
+     * @param password
+     * @return
+     */
+    @RequestMapping(value = "/user/logout", method = RequestMethod.POST)
+    public ResponseBean logout(@RequestParam String email, @RequestParam String password) {
+        String message = messageCodeStorage.success_code;
+        try {
+            logger.info("logout = " + email + " pwd = " + password);
+
+            // 用户有效性校验
+            userInfoModel.checkUserInfo(email,password);
+
+            // 验证用户信息是否存在
+            UserInfoBean userInfoBean = userService.getUserFromEmail(email);
+            logger.info("logout userInfoBean ==" + userInfoBean);
+            if (userInfoBean == null) {
+                throw new MessageException(messageCodeStorage.user_not_exists_error);
+            }
+
+            // token不存在，则用户未登录
+            String token = userInfoBean.getToken();
+            if (StringUtils.isEmpty(token)) {
+                throw new MessageException(messageCodeStorage.user_not_login_error);
+            }
+
+            userService.cleanUserToken(token);
+        } catch (MessageException messageException) {
+            message = messageException.getMessage();
+        } catch (Exception e) {
+            logger.error("LoginController logout",e);
+        }
+        return responseHelperUtil.returnMessage(message);
+    }
+
+}
