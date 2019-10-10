@@ -15,11 +15,11 @@ public class TestTTL {
     private String _id;
 
     //过期时间为1000秒
-    @Indexed(expireAfterSeconds=100)
-    private String ttl;
+//    @Indexed(expireAfterSeconds=100)
+//    private String ttl;
 
     private String testid;
 
-    @Indexed(expireAfterSeconds=0)
-    private Date expireTime;
+//    @Indexed(expireAfterSeconds=0)
+//    private Date expireTime;
 }

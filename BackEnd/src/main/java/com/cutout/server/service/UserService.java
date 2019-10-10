@@ -18,20 +18,20 @@ public interface UserService
      * @param email
      * @return
      */
-    UserInfoBean getUserFromEmail(String email);
+    UserInfoBean findUserByEmail(String email);
 
     /**
      * 根据验证码获取用户信息
      * @param code
      * @return
      */
-    UserInfoBean getUserFromCode(String code);
+    UserInfoBean findUserByCode(String code);
 
     /**
      *  根据code，更新用户激活状态
      * @param code
      */
-    void updateUserFromCode(String code);
+    void updateUserByCode(String code);
 
     /**
      * 删除用户，注册失败的时候使用
@@ -44,4 +44,12 @@ public interface UserService
      * @param token
      */
     void cleanUserToken(String token);
+
+    /**
+     * 用户登录之后，更新用户token和最后登录时间
+     *
+     * @param email
+     * @param token
+     */
+    void updateUserWithLogin(String email,String token);
 }

@@ -74,4 +74,12 @@ public class JwtTokenUtil {
         }
         return resultMap;
     }
+
+    /**
+     * token是否过期
+     * @return true：过期
+     */
+    public boolean isTokenExpired(Date expiresAt) {
+        return expiresAt.before(new Date());
+    }
 }

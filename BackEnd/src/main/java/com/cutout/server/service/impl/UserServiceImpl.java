@@ -22,22 +22,22 @@ public class UserServiceImpl implements UserService {
         if (userInfoBean != null) {
             mallService.sendHtmlMail(userInfoBean);
         }
-        return userMongoModel.addUser(userInfoBean);
+        return userInfoBean;
     }
 
     @Override
-    public UserInfoBean getUserFromEmail(String email) {
-        return userMongoModel.getUserFromEmail(email);
+    public UserInfoBean findUserByEmail(String email) {
+        return userMongoModel.findUserByEmail(email);
     }
 
     @Override
-    public UserInfoBean getUserFromCode(String code) {
-        return userMongoModel.getUserFromCode(code);
+    public UserInfoBean findUserByCode(String code) {
+        return userMongoModel.findUserByCode(code);
     }
 
     @Override
-    public void updateUserFromCode(String code) {
-        userMongoModel.updateUserFromCode(code);
+    public void updateUserByCode(String code) {
+        userMongoModel.updateUserByCode(code);
     }
 
     @Override
@@ -48,5 +48,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void cleanUserToken(String token) {
         userMongoModel.cleanUserToken(token);
+    }
+
+    @Override
+    public void updateUserWithLogin(String email, String token) {
+        userMongoModel.updateUserWithLogin(email,token);
     }
 }

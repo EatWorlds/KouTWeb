@@ -41,9 +41,9 @@ public class MessageCodeStorage {
     public static final String user_login_email_password_error="user_email_name_password_error|100006|邮箱或者密码不正确";
 
     /**
-     * messagecode :100007  messagevalue :注册链接验证码不正确
+     * messagecode :100007  messagevalue :链接验证码已失效
      */
-    public static final String user_login_check_code_error="user_login_check_code_error|100007|注册链接验证码不正确";
+    public static final String user_login_check_code_error="user_login_check_code_error|100007|链接验证码已失效";
 
     /**
      * messagecode :100008  messagevalue :请选择一个文件上传

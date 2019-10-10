@@ -29,18 +29,6 @@ public class ProductInfoModel {
     private MongoTemplate mongoTemplate;
 
     public ProductBean getProductInfo(int type) {
-        TestTTL testTTL = new TestTTL();
-        testTTL.setTestid("e45234523");
-        mongoTemplate.save(testTTL);
-
-        Document document = new Document();
-        document.append("createTime",1);
-        IndexOptions indexOptions = new IndexOptions();
-        indexOptions.expireAfter(300L,TimeUnit.SECONDS);
-        this.mongoTemplate.getCollection("test").createIndex(document,indexOptions);
-
-
-
         Query query = Query.query(Criteria.where("type").is(type));
         return mongoTemplate.findOne(query, ProductBean.class);
     }

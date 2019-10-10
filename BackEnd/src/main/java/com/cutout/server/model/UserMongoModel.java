@@ -49,7 +49,7 @@ public class UserMongoModel {
      * @param email
      * @return
      */
-    public UserInfoBean getUserFromEmail(String email) {
+    public UserInfoBean findUserByEmail(String email) {
         Query query = Query.query(Criteria.where("email").is(email));
         return mongoTemplate.findOne(query,UserInfoBean.class);
     }
@@ -59,7 +59,7 @@ public class UserMongoModel {
      * @param code
      * @return
      */
-    public UserInfoBean getUserFromCode(String code) {
+    public UserInfoBean findUserByCode(String code) {
         Query query = Query.query(Criteria.where("code").is(code));
         return mongoTemplate.findOne(query,UserInfoBean.class);
     }
@@ -69,11 +69,11 @@ public class UserMongoModel {
      * @param code
      * @return
      */
-    public UpdateResult updateUserFromCode(String code) {
+    public UpdateResult updateUserByCode(String code) {
         Query query = Query.query(Criteria.where("code").is(code));
         Update update = new Update();
         update.set("status",1);
-        update.update("code","");
+        update.set("code","");
         UpdateResult updateResult = mongoTemplate.updateFirst(query,update,UserInfoBean.class);
 
         return updateResult;
@@ -105,7 +105,17 @@ public class UserMongoModel {
     public UpdateResult cleanUserToken(String token) {
         Query query = Query.query(Criteria.where("token").is(token));
         Update update = new Update();
-        update.update("token","");
+        update.set("token","");
+        UpdateResult updateResult = mongoTemplate.updateFirst(query,update,UserInfoBean.class);
+        logger.info("============" + updateResult);
+        return updateResult;
+    }
+
+    public UpdateResult updateUserWithLogin(String email,String token) {
+        Query query = Query.query(Criteria.where("email").is(email));
+        Update update = new Update();
+        update.set("token",token);
+        update.set("last_login",bases.getSystemSeconds());
         UpdateResult updateResult = mongoTemplate.updateFirst(query,update,UserInfoBean.class);
 
         return updateResult;

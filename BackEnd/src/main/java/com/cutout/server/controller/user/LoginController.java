@@ -3,6 +3,7 @@ package com.cutout.server.controller.user;
 
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
+import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.model.UserInfoModel;
@@ -68,14 +69,14 @@ public class LoginController {
     public ResponseBean login(@RequestParam String email, @RequestParam String password) {
 
         String message = messageCodeStorage.success_code;
-        Map<String,String> tokenMap = null;
+        Map<String,String> result = new HashMap<>();
         try {
 
             // 用户有效性校验
             userInfoModel.checkUserInfo(email,password);
 
             // 验证用户信息是否存在
-            UserInfoBean userInfoBean = userService.getUserFromEmail(email);
+            UserInfoBean userInfoBean = userService.findUserByEmail(email);
             logger.info("result ==" + userInfoBean);
             if (userInfoBean == null) {
                 throw new MessageException(messageCodeStorage.user_not_exists_error);
@@ -87,13 +88,13 @@ public class LoginController {
                 throw new MessageException(messageCodeStorage.user_login_email_password_error);
             }
 
-            String token = jwtTokenUtil.generateToken(userInfoBean);
             // 创建token
-            tokenMap = new HashMap<>();
-            tokenMap.put("token",token);
-            tokenMap.put("email",email);
+            String token = jwtTokenUtil.generateToken(userInfoBean);
 
+            result.put("token",token);
+            result.put("email",email);
 
+            userService.updateUserWithLogin(email,token);
 //            Map<String,Object> result = jwtTokenUtil.verify(token,userInfoBean);
 //            // Mon Sep 23 17:46:33 CST 2019
 //            Date time = (Date)result.get("time");
@@ -106,7 +107,7 @@ public class LoginController {
             logger.error("LoginController login",e);
         }
 
-        return responseHelperUtil.returnMessage(message,tokenMap);
+        return responseHelperUtil.returnMessage(message,result);
     }
 
     /**
@@ -119,6 +120,7 @@ public class LoginController {
     @RequestMapping(value = "/user/logout", method = RequestMethod.POST)
     public ResponseBean logout(@RequestParam String email, @RequestParam String password) {
         String message = messageCodeStorage.success_code;
+        Map<String,String> result = new HashMap<>();
         try {
             logger.info("logout = " + email + " pwd = " + password);
 
@@ -126,7 +128,7 @@ public class LoginController {
             userInfoModel.checkUserInfo(email,password);
 
             // 验证用户信息是否存在
-            UserInfoBean userInfoBean = userService.getUserFromEmail(email);
+            UserInfoBean userInfoBean = userService.findUserByEmail(email);
             logger.info("logout userInfoBean ==" + userInfoBean);
             if (userInfoBean == null) {
                 throw new MessageException(messageCodeStorage.user_not_exists_error);
@@ -139,12 +141,14 @@ public class LoginController {
             }
 
             userService.cleanUserToken(token);
+
+            result.put(ConstantConfigure.RESULT_EMAIL,email);
         } catch (MessageException messageException) {
             message = messageException.getMessage();
         } catch (Exception e) {
             logger.error("LoginController logout",e);
         }
-        return responseHelperUtil.returnMessage(message);
+        return responseHelperUtil.returnMessage(message,result);
     }
 
 }
