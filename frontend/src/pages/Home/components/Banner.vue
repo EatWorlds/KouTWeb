@@ -92,12 +92,14 @@ export default {
         top: 200px;
         right: 0px;
     }
+
     .intro h1{
         font-size: 48px;
         font-weight: bold;
         color: #fff;
         margin: 0 0 10px 0;
     }
+
     .intro > p{
         position: relative;
         line-height: 30px;
@@ -106,6 +108,7 @@ export default {
         font-weight: 400;
         margin-bottom: 40px;
     }
+    
     .btn-lg{
         border-radius: 35px;
         color: #2263fe;

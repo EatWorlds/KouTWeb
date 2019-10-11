@@ -104,20 +104,33 @@
           <div class="model model_login_title">
            <h3>注册账号</h3>
           <div class="modal-body">
-             <form>
-                <div class="form-group">
+             <form id="addForm">
+                <div class="form-group" enctype="multipart/form-data">
                   <label for="exampleInputEmail1">邮箱</label>
-                  <input type="email" class="form-control inputTextStyle" id="InputCode" placeholder="请输入邮箱的验证码">
+                  <input type="email" class="form-control inputTextStyle" id="rInputEmail1" placeholder="请输入邮箱">
                 </div>
                 <div class="form-group">
-                  <input type="String " class="form-control inputNoCodeStyle" id="InputEmail1" placeholder="请输入邮箱">
-                  <button style="margin-left:20px;" class="btn" type="button">获取验证码</button>
+                  <input type="String " class="form-control inputNoCodeStyle" id="rInputCode" placeholder="请输入验证码">
+                  <button 
+                    id="btnCode"
+                    style="margin-left:20px;" 
+                    class="btn" 
+                    type="button"
+                    @click="getCode()"
+                    >获取验证码</button>
                 </div>
                 <div class="form-group">
-                  <input type="password" class="form-control inputNoTextStyle" id="InputPassword1" placeholder="请输入6-30位密码">
+                  <input type="password" class="form-control inputNoTextStyle" id="rInputPassword" placeholder="请输入6-30位字母、数字的密码">
+                </div>
+                <div class="hintText" id="hintText" style="display: none">
+                  <p>请输入6-30位字母、数字的密码</p>
                 </div>
                 <div class="form-group">
-                  <button type="submit" class="btn btn-default btn_login">注册</button>
+                  <button 
+                  type="submit" 
+                  class="btn btn-default btn_login"
+                  @click="postRegistereted()"
+                  >注册</button>
                 </div>
                 <div class="form-group">
                   <a href="#" data-toggle="modal" data-dismiss="modal" data-target="#loginModal">已有账号？去登陆</a>
@@ -136,27 +149,84 @@
 export default {
   name: "HomeHeader",
   methods: {
-    // 登录
+    // 登录弹框
     login() {
       $('#loginModal').modal({
         keyboard: true
       })
     },
 
-    // 注册
+    // 注册弹框
     registereted() {
        $('#registeredModel').modal({
         keyboard: true
       })
     },
+
+    // 获取邮箱验证码
+    getCode() {
+      let number = 60;
+      var countdown = function(){
+        if (number == 0) {
+          $('#btnCode').attr("disabled",false);
+          $('#btnCode').html("发送验证码");
+          number = 60;
+          return;
+        } else {
+          $('#btnCode').attr("disabled",true);
+          $('#btnCode').html(number + "秒 重新发送");
+          number--;
+        }
+        setTimeout(countdown,1000);
+      }
+		  setTimeout(countdown,1000);
+    },
+
+    // 注册/登录验证
+    verification(value) {
+      if(!(/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/.test())){
+        $('#hintText').show();
+      }else{
+        $('#hintText').hide();
+      }
+    },
+
+    // 进行注册
+    postRegistereted() {
+      // 注册验证
+      this.verification($('#rInputPassword').val());
+      // axios.post('/user', {
+      //   email: $('#rInputEmail').val(), // 邮箱 
+      //   password:  $('#rInputPassword').val(), // 密码
+      //   code: $('#rInputCode').val()    // 验证码
+      // })
+      // .then(function (res) {
+      //   console.log(res)
+      // })
+      // .catch(function (error) {
+      //   console.log(error)
+      // })
+    },
+
+    // 进行登录
+    postLogin() {
+      // 登录验证
+      this.verification($('#InputPassword').val());
+
+      // axios.post('/user', {
+      //   email: $('#InputEmail').val(), // 邮箱 
+      //   password:  $('#InputPassword').val(), // 密码
+      // })
+      // .then(function (res) {
+      //   console.log(res)
+      // })
+      // .catch(function (error) {
+      //   console.log(error)
+      // })
+    }
   }
 };
 
-// $(function(){
-//   $('#loginModel').model({
-//     keyboard: true
-//   })
-// })
 </script>
 
 <style scoped>
@@ -167,6 +237,11 @@ export default {
 
   ul{
     margin-left: 100px;
+  }
+
+  /* 模态框位置 */
+  .modal-content{
+    left: 100px;
   }
 
   /* 单独样式 */
@@ -198,6 +273,13 @@ export default {
   .btn_grounp{
     position: absolute;
     right: 100px;
+  }
+
+  /* 提示文字 */
+  .hintText{
+    margin-left: 35px;
+    font-size: 12px;
+    color:red;
   }
 
   .btn-registered{
