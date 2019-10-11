@@ -1,5 +1,6 @@
 package com.cutout.server.controller.user;
 
+import com.alibaba.fastjson.JSON;
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
@@ -7,6 +8,7 @@ import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 import com.cutout.server.model.UserInfoModel;
+import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
 import com.cutout.server.service.VerityCodeService;
 import com.cutout.server.utils.Bases;
@@ -46,6 +48,9 @@ public class RegisterController {
 
     @Autowired
     private VerityCodeService verityCodeService;
+
+    @Autowired
+    private MailService mailService;
 
     /**
      * 用户注册
@@ -87,6 +92,9 @@ public class RegisterController {
                 throw new MessageException(messageCodeStorage.user_register_failed);
             }
 
+            // 发送一封激活的链接
+            mailService.sendHtmlMail(userInfoBean);
+
             result.put(ConstantConfigure.RESULT_EMAIL,email);
 
         } catch (MessageException messageException) {
@@ -101,7 +109,7 @@ public class RegisterController {
     }
 
     /**
-     * 验证注册链接的code
+     * 验证注册链接的code，有效时间为24小时
      *
      * @param code
      * @return
@@ -117,7 +125,10 @@ public class RegisterController {
                 throw new MessageException(messageCodeStorage.user_login_check_code_error);
             }
 
-            userService.updateUserByCode(code);
+            logger.info("RegisterController checkCode = " + JSON.toJSON(userInfoBean));
+            if (0 == userInfoBean.getStatus()) {
+                userService.updateUserByCode(code);
+            }
 
             result.put(ConstantConfigure.RESULT_EMAIL,userInfoBean.getEmail());
         } catch (MessageException messageException) {

@@ -73,7 +73,7 @@ public class UserMongoModel {
         Query query = Query.query(Criteria.where("code").is(code));
         Update update = new Update();
         update.set("status",1);
-        update.set("code","");
+//        update.set("code","");
         UpdateResult updateResult = mongoTemplate.updateFirst(query,update,UserInfoBean.class);
 
         return updateResult;

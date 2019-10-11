@@ -55,9 +55,9 @@ public class UserInfoBean {
     private String code;
 
     /**
-     * 忘记密码，发送到邮箱的校验码
+     * 激活链接发送的时间，24小时过期，需要重新发送
      */
-    private String password_code;
+    private String code_time;
 
     /**
      * 上传的图片列表

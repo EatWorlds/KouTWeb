@@ -3,6 +3,7 @@ package com.cutout.server.model;
 import com.alibaba.fastjson.JSON;
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
+import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 import com.cutout.server.service.VerityCodeService;
@@ -76,7 +77,7 @@ public class UserInfoModel {
         }
 
         // 验证码超过5分钟，给过期提示
-        if (bases.getSystemSeconds() - userVerityCodeBean.getUpdate_time() > 500) {
+        if (bases.getSystemSeconds() - userVerityCodeBean.getUpdate_time() > ConstantConfigure.FIVE_MINUTES_TIMES) {
             throw new MessageException(messageCodeStorage.user_verity_code_out_time);
         }
 

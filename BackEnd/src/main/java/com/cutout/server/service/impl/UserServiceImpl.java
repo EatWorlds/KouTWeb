@@ -13,15 +13,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMongoModel userMongoModel;
 
-    @Autowired
-    private MailService mailService;
-
     @Override
     public UserInfoBean addUser(UserInfoBean userInfoBean) {
         userInfoBean = userMongoModel.addUser(userInfoBean);
-        if (userInfoBean != null) {
-            mailService.sendHtmlMail(userInfoBean);
-        }
         return userInfoBean;
     }
 

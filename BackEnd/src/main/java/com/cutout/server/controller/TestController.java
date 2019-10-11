@@ -9,7 +9,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author dimple
@@ -68,16 +72,16 @@ public class TestController {
     }
 
     @RequestMapping(value = "/test2", method = RequestMethod.GET)
-    public ResponseBean getTestInfo2(@RequestParam String info) {
+    public void getTestInfo2(@RequestParam String info, HttpServletResponse response) {
         String message = messageCodeStorage.success_code;
 
         try {
-
+            response.sendRedirect("https://www.baidu.com");
         } catch (Exception e) {
 
         }
+return;
 
-        return responseHelperUtil.returnMessage(message);
     }
 
 
