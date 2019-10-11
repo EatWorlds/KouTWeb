@@ -60,4 +60,29 @@ public class MessageCodeStorage {
      */
     public static final String product_info_empty="product_info_empty|100010|暂无产品信息";
 
+    /**
+     * messagecode :100011  messagevalue :请求过于频繁
+     */
+    public static final String request_busy="request_busy|100011|请求过于频繁";
+
+    /**
+     * messagecode :100012  messagevalue :验证码为空
+     */
+    public static final String user_verity_code_empty="user_verity_code_empty|100012|验证码为空";
+
+    /**
+     * messagecode :100013  messagevalue :验证码无效
+     */
+    public static final String user_verity_code_invalid="user_verity_code_invalid|100013|验证码无效";
+
+    /**
+     * messagecode :100014  messagevalue :验证码过期
+     */
+    public static final String user_verity_code_out_time="user_verity_code_out_time|100014|验证码过期";
+
+    /**
+     * messagecode :100015  messagevalue :验证码不正确
+     */
+    public static final String user_verity_code_error="user_verity_code_error|100015|验证码不正确";
+
 }

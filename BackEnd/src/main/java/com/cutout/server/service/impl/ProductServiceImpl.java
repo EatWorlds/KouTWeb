@@ -4,7 +4,6 @@ import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.model.ProductInfoModel;
 import com.cutout.server.model.UserMongoModel;
-import com.cutout.server.service.MallService;
 import com.cutout.server.service.ProductService;
 import com.cutout.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

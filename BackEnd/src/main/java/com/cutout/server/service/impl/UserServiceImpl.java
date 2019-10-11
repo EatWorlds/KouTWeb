@@ -2,7 +2,7 @@ package com.cutout.server.service.impl;
 
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.model.UserMongoModel;
-import com.cutout.server.service.MallService;
+import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,13 +14,13 @@ public class UserServiceImpl implements UserService {
     private UserMongoModel userMongoModel;
 
     @Autowired
-    private MallService mallService;
+    private MailService mailService;
 
     @Override
     public UserInfoBean addUser(UserInfoBean userInfoBean) {
         userInfoBean = userMongoModel.addUser(userInfoBean);
         if (userInfoBean != null) {
-            mallService.sendHtmlMail(userInfoBean);
+            mailService.sendHtmlMail(userInfoBean);
         }
         return userInfoBean;
     }

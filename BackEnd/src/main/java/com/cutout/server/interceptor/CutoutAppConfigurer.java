@@ -20,6 +20,7 @@ public class CutoutAppConfigurer implements WebMvcConfigurer {
         InterceptorRegistration addInterceptor = registry.addInterceptor(new LoginInterceptor());
         addInterceptor.addPathPatterns("/**");
         // 过滤登录
-        addInterceptor.excludePathPatterns("/v1/user/login");
+        addInterceptor.excludePathPatterns("/v1/user/login")
+                        .excludePathPatterns("/v1/user");
     }
 }

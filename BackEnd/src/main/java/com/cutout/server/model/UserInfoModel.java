@@ -1,8 +1,11 @@
 package com.cutout.server.model;
 
+import com.alibaba.fastjson.JSON;
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.domain.bean.user.UserInfoBean;
+import com.cutout.server.domain.bean.user.UserVerityCodeBean;
+import com.cutout.server.service.VerityCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.UUIDUtil;
 import com.mongodb.client.result.DeleteResult;
@@ -29,6 +32,9 @@ public class UserInfoModel {
     @Autowired
     private Bases bases;
 
+    @Autowired
+    private VerityCodeService verityCodeService;
+
     /**
      * 校验邮箱，密码是否有效
      *
@@ -51,5 +57,31 @@ public class UserInfoModel {
 
     }
 
+    /**
+     * 校验验证码是否有效
+     * @param code
+     * @throws MessageException
+     */
+    public void checkVerityCode(String email,int code) throws MessageException {
 
+        if (StringUtils.isEmpty(code)) {
+            throw new MessageException(messageCodeStorage.user_verity_code_empty);
+        }
+
+        UserVerityCodeBean userVerityCodeBean = verityCodeService.findVerityCodeByEmail(email);
+        logger.info("UserInfoModel checkVerityCode userVerityCodeBean = " + JSON.toJSONString(userVerityCodeBean));
+        // 没有信息，也给验证码无效的提示
+        if (userVerityCodeBean == null) {
+            throw new MessageException(messageCodeStorage.user_verity_code_invalid);
+        }
+
+        // 验证码超过5分钟，给过期提示
+        if (bases.getSystemSeconds() - userVerityCodeBean.getUpdate_time() > 500) {
+            throw new MessageException(messageCodeStorage.user_verity_code_out_time);
+        }
+
+        if (code != userVerityCodeBean.getVerity_code()) {
+            throw new MessageException(messageCodeStorage.user_verity_code_error);
+        }
+    }
 }

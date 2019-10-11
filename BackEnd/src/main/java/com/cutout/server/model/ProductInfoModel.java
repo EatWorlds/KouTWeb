@@ -1,12 +1,7 @@
 package com.cutout.server.model;
 
-import com.cutout.server.configure.exception.MessageException;
-import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
-import com.cutout.server.domain.bean.user.TestTTL;
-import com.cutout.server.domain.bean.user.UserInfoBean;
-import com.cutout.server.utils.Bases;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +9,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;

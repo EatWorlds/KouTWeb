@@ -5,8 +5,10 @@ import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
+import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 import com.cutout.server.model.UserInfoModel;
 import com.cutout.server.service.UserService;
+import com.cutout.server.service.VerityCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.ResponseHelperUtil;
 import org.slf4j.Logger;
@@ -42,15 +44,19 @@ public class RegisterController {
     @Autowired
     private UserInfoModel userInfoModel;
 
+    @Autowired
+    private VerityCodeService verityCodeService;
+
     /**
      * 用户注册
      *
      * @param email
      * @param password
+     * @param code 邮箱校验码
      * @return
      */
     @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public ResponseBean register(@RequestParam String email,@RequestParam String password) {
+    public ResponseBean register(@RequestParam String email,@RequestParam String password,@RequestParam int code) {
 
         String message = messageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
@@ -66,6 +72,9 @@ public class RegisterController {
             if (userInfoBean != null) {
                 throw new MessageException(messageCodeStorage.user_login_exists_error);
             }
+
+            // 验证校验码是否正确，是否超时
+            userInfoModel.checkVerityCode(email,code);
 
             userInfoBean = new UserInfoBean();
             userInfoBean.setEmail(email);
