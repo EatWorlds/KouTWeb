@@ -32,5 +32,9 @@ build/
 
 
 /bin
-/logs
+/log
 /setting
+
+.mvn
+mvnw
+mvnw.cmd
