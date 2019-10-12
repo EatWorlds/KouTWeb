@@ -4,6 +4,8 @@ import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.model.UserMongoModel;
 import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
+import com.cutout.server.utils.Bases;
+import com.cutout.server.utils.UUIDUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +14,15 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMongoModel userMongoModel;
+
+    @Autowired
+    private UUIDUtil uuidUtil;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private Bases bases;
 
     @Override
     public UserInfoBean addUser(UserInfoBean userInfoBean) {
@@ -47,5 +58,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUserWithLogin(String email, String token) {
         userMongoModel.updateUserWithLogin(email,token);
+    }
+
+    @Override
+    public UserInfoBean updateUserCodeByEmail(UserInfoBean userInfoBean) {
+        userInfoBean.setCode(uuidUtil.getUUIDCode());
+        userInfoBean.setCode_time(bases.getSystemSeconds());
+        userMongoModel.updateUserCodeByEmail(userInfoBean);
+        return userInfoBean;
     }
 }

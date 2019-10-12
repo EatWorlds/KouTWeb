@@ -41,6 +41,7 @@ public class UserMongoModel {
         userInfoBean.setStatus(0);
         // 设置code
         userInfoBean.setCode(uuidUtil.getUUIDCode());
+        userInfoBean.setCode_time(bases.getSystemSeconds());
         return mongoTemplate.save(userInfoBean);
     }
 
@@ -116,6 +117,16 @@ public class UserMongoModel {
         Update update = new Update();
         update.set("token",token);
         update.set("last_login",bases.getSystemSeconds());
+        UpdateResult updateResult = mongoTemplate.updateFirst(query,update,UserInfoBean.class);
+
+        return updateResult;
+    }
+
+    public UpdateResult updateUserCodeByEmail(UserInfoBean userInfoBean) {
+        Query query = Query.query(Criteria.where("email").is(userInfoBean.getEmail()));
+        Update update = new Update();
+        update.set("code",userInfoBean.getCode());
+        update.set("code_time",userInfoBean.getCode_time());
         UpdateResult updateResult = mongoTemplate.updateFirst(query,update,UserInfoBean.class);
 
         return updateResult;

@@ -3,13 +3,16 @@ package com.cutout.server.controller.user;
 import com.alibaba.fastjson.JSON;
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
+import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 import com.cutout.server.service.MailService;
+import com.cutout.server.service.UserService;
 import com.cutout.server.service.VerityCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.ResponseHelperUtil;
+import com.cutout.server.utils.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,9 @@ public class UpdateController {
     @Autowired
     private Bases bases;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * 更新用户信息
      *
@@ -70,7 +76,7 @@ public class UpdateController {
      * @param email
      * @return
      */
-    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    @RequestMapping(value = "/email", method = RequestMethod.GET)
     public ResponseBean getVerityCode(@RequestParam String email) {
         String message = messageCodeStorage.success_code;
         UserVerityCodeBean userVerityCodeBean = null;
@@ -84,7 +90,7 @@ public class UpdateController {
             } else { // 如果有该用户，进行相应的判断以及修改
                 int lastTime = userVerityCodeBean.getUpdate_time();
                 // 请求时间在60之内的，提示操作过于频繁
-                if (bases.getSystemSeconds() - lastTime < 60) {
+                if (bases.getSystemSeconds() - lastTime < ConstantConfigure.ONE_MINUTE_TIMES) {
                     throw new MessageException(messageCodeStorage.request_busy);
                 }
 
@@ -100,5 +106,44 @@ public class UpdateController {
         }
 
         return responseHelperUtil.returnMessage(message,userVerityCodeBean);
+    }
+
+    /**
+     * 重新发送邮箱验证码
+     * @param email
+     * @return
+     */
+    @RequestMapping(value = "/email/{email}", method = RequestMethod.PATCH)
+    public ResponseBean resendCheckEmail(@PathVariable("email") String email) {
+        String message = messageCodeStorage.success_code;
+        Map<String,String> result = new HashMap<>();
+        try {
+            logger.info("resendCheckEmail = " + email);
+            UserInfoBean userInfoBean = userService.findUserByEmail(email);
+            if (userInfoBean == null) {
+                throw new MessageException(messageCodeStorage.user_not_exists_error);
+            }
+
+            int timeDiff = bases.getSystemSeconds() - userInfoBean.getCode_time();
+            logger.info("resendCheckEmail timeDiff = " + timeDiff);
+
+            // 1分钟之内不允许重复点击链接
+            if (timeDiff < ConstantConfigure.ONE_MINUTE_TIMES) {
+                throw new MessageException(messageCodeStorage.request_busy);
+            }
+
+            // 更新用户邮箱验证码
+            userInfoBean = userService.updateUserCodeByEmail(userInfoBean);
+            logger.info("UpdateController userInfoBean = " + JSON.toJSONString(userInfoBean));
+            mailService.sendHtmlMail(userInfoBean);
+
+            result.put(ConstantConfigure.RESULT_EMAIL,userInfoBean.getEmail());
+        } catch (MessageException messageException) {
+            message = messageException.getMessage();
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+
+        return  responseHelperUtil.returnMessage(message,result);
     }
 }

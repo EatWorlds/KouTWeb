@@ -26,7 +26,7 @@ public class MailServiceImpl implements MailService {
                 String to = userInfoBean.getEmail();
                 String subject = "注册验证";
 
-                String content = "<html><head></head><body><h1>这是一封激活邮件,激活请点击以下链接</h1><h3><a href='http://localhost:9099/v1/user/"
+                String content = "<html><head></head><body><h1>这是一封激活邮件（24小时有效），激活请点击以下链接</h1><h3><a href='http://localhost:9099/v1/user/"
                         + userInfoBean.getCode() + "'>http://localhost:9099/v1/user/" + userInfoBean.getCode()
                         + "</href></h3></body></html>";
 

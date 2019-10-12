@@ -85,4 +85,9 @@ public class MessageCodeStorage {
      */
     public static final String user_verity_code_error="user_verity_code_error|100015|验证码不正确";
 
+    /**
+     * messagecode :100016  messagevalue :邮件链接已失效
+     */
+    public static final String user_login_check_code_invalid="user_login_check_code_invalid|100016|邮件链接已失效";
+
 }

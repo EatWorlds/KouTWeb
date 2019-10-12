@@ -52,4 +52,11 @@ public interface UserService
      * @param token
      */
     void updateUserWithLogin(String email,String token);
+
+    /**
+     * 更新用户邮箱验证码
+     * @param userInfoBean
+     * @return
+     */
+    UserInfoBean updateUserCodeByEmail(UserInfoBean userInfoBean);
 }

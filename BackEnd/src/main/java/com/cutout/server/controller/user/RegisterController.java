@@ -13,6 +13,7 @@ import com.cutout.server.service.UserService;
 import com.cutout.server.service.VerityCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.ResponseHelperUtil;
+import com.cutout.server.utils.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,8 @@ public class RegisterController {
 
     @Autowired
     private MailService mailService;
+
+
 
     /**
      * 用户注册
@@ -125,7 +128,16 @@ public class RegisterController {
                 throw new MessageException(messageCodeStorage.user_login_check_code_error);
             }
 
-            logger.info("RegisterController checkCode = " + JSON.toJSON(userInfoBean));
+            int timeDiff = bases.getSystemSeconds() - userInfoBean.getCode_time();
+            logger.info("RegisterController timeDiff = " + timeDiff);
+            logger.info("RegisterController checkCode = " + JSON.toJSONString(userInfoBean));
+
+            // 超过24小时，直接显示失效
+            if (timeDiff > ConstantConfigure.TWENTY_FOUR_HOURS_TIMES) {
+                throw new MessageException(messageCodeStorage.user_login_check_code_invalid);
+            }
+
+            // 还没验证过，则进行验证，否则直接返回成功
             if (0 == userInfoBean.getStatus()) {
                 userService.updateUserByCode(code);
             }
@@ -139,4 +151,5 @@ public class RegisterController {
 
         return  responseHelperUtil.returnMessage(message,result);
     }
+
 }

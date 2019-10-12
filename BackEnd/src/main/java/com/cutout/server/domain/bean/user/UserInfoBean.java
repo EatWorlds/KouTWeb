@@ -57,7 +57,7 @@ public class UserInfoBean {
     /**
      * 激活链接发送的时间，24小时过期，需要重新发送
      */
-    private String code_time;
+    private int code_time;
 
     /**
      * 上传的图片列表
