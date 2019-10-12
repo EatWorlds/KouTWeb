@@ -7,6 +7,7 @@ import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.model.UserInfoModel;
+import com.cutout.server.service.AuthIgnore;
 import com.cutout.server.service.UserService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.JwtTokenUtil;
@@ -66,6 +67,7 @@ public class LoginController {
      * @return
      */
     @RequestMapping(value = "/user/login", method = RequestMethod.POST)
+    @AuthIgnore
     public ResponseBean login(@RequestParam String email, @RequestParam String password) {
 
         String message = messageCodeStorage.success_code;
@@ -80,6 +82,16 @@ public class LoginController {
             logger.info("result ==" + userInfoBean);
             if (userInfoBean == null) {
                 throw new MessageException(messageCodeStorage.user_not_exists_error);
+            }
+
+            // token已存在，则表示用户已经登录
+            if (!StringUtils.isEmpty(userInfoBean.getToken())) {
+                // 如果来登录的用户距离上一次超过固定的时间，则给他重新登录的机会，否则返回已经登录
+                if (bases.getSystemSeconds() - userInfoBean.getLast_login() > ConstantConfigure.TOKEN_INVALID_TIME) {
+                    userService.cleanUserToken(userInfoBean.getToken());
+                } else {
+                    throw new MessageException(messageCodeStorage.user_already_login_error);
+                }
             }
 
             // 验证密码是否正确

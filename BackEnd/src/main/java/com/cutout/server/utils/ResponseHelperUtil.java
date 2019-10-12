@@ -3,6 +3,7 @@ package com.cutout.server.utils;
 import com.cutout.server.configure.message.MessageCodeConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

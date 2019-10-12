@@ -3,6 +3,7 @@ package com.cutout.server.controller.file;
 import com.alibaba.fastjson.JSON;
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
+import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.FileBase;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,44 +50,43 @@ public class FileController {
     private Bases bases;
 
     @RequestMapping(value = "/file", method = RequestMethod.POST)
-//    public ResponseBean fileUpload(@RequestParam("file") MultipartFile[] files) {
-    public ResponseBean fileUpload(@RequestParam("file") MultipartFile files) {
+    public ResponseBean fileUpload(@RequestParam("file") MultipartFile files, HttpServletRequest request) {
         String message = messageCodeStorage.success_code;
         Map<String,String> paths = null;
         try {
+            Map<String,Object> attribute = (Map<String, Object>) request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
+            if (attribute == null) {
+                throw new MessageException(messageCodeStorage.user_upload_img_failed);
+            }
+
             if (StringUtils.isEmpty(files)) {
                 throw new MessageException(messageCodeStorage.user_upload_file_empty);
             }
 
-            StringBuilder stringBuilder = new StringBuilder();
+            String email = (String)attribute.get("email");
+
             paths = new HashMap<>();
-//            for (MultipartFile file : files) {
-                String fileName = files.getOriginalFilename();
-//                long fileSize = file.getSize();
-//                logger.info("fileName = " + fileName + " fileSize = " + fileSize);
-                // 按日期新建文件夹
-                String imgPath = path + "/" + bases.transferLongToDate("yyyyMMdd",System.currentTimeMillis()) + "/";
-                // 判断是否有文件夹路径，没有需要创建
-                fileBase.isFileExist(imgPath);
+            String fileName = files.getOriginalFilename();
 
-                // 组装新的文件名  文件夹路径+邮箱地址+时间+随机数+文件名
-                String filePath = imgPath +"/"+"email" + bases.getSystemSeconds() + bases.getRandom(10000,99999) + fileName;
+            // 按日期新建文件夹
+            String imgPath = path + "/" + bases.transferLongToDate("yyyyMMdd",System.currentTimeMillis()) + "/";
+            // 判断是否有文件夹路径，没有需要创建
+            fileBase.isFileExist(imgPath);
 
-                File localFile = new File(filePath);
-                files.transferTo(localFile);
-//                stringBuilder.append(localFile.getAbsolutePath()).append(",");
-                paths.put("path",localFile.getAbsolutePath());
-//            }
+            // 组装新的文件名  文件夹路径+邮箱地址+时间+随机数+文件名
+            String filePath = imgPath +"/"+email + bases.getSystemSeconds() + bases.getRandom(10000,99999) + fileName;
 
-//            logger.info("sb = " + stringBuilder.toString());
-//            logger.info("paths = " + JSON.toJSONString(paths));
+            File localFile = new File(filePath);
+            files.transferTo(localFile);
+            paths.put("path",localFile.getAbsolutePath());
+            paths.put("email",email);
 
         } catch (MessageException messageException) {
             message = messageException.getMessage();
         } catch (IOException ioException) {
-            logger.error("",ioException);
+            logger.error("IOException",ioException);
         } catch (Exception e) {
-
+            logger.error("Exception",e);
         }
 
         return responseHelperUtil.returnMessage(message,paths);

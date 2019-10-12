@@ -1,5 +1,6 @@
 package com.cutout.server.configure.message;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -89,5 +90,25 @@ public class MessageCodeStorage {
      * messagecode :100016  messagevalue :邮件链接已失效
      */
     public static final String user_login_check_code_invalid="user_login_check_code_invalid|100016|邮件链接已失效";
+
+    /**
+     * messagecode :100017  messagevalue :无效token，请重新登录
+     */
+    public static final String user_token_invalid="user_token_invalid|100017|无效token，请重新登录";
+
+    /**
+     * messagecode :100018  messagevalue :图片上传失败
+     */
+    public static final String user_upload_img_failed="user_upload_img_failed|100018|图片上传失败";
+
+    /**
+     * messagecode :100018  messagevalue :登录已过期，请重新登录
+     */
+    public static final String user_token_out_of_time="user_token_out_of_time|100018|登录已过期，请重新登录";
+
+    /**
+     * messagecode :100019  messagevalue :用户已登录
+     */
+    public static final String user_already_login_error="user_already_login_error|100019|用户已登录";
 
 }

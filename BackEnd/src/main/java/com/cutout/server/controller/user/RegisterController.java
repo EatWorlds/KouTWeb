@@ -8,6 +8,7 @@ import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 import com.cutout.server.model.UserInfoModel;
+import com.cutout.server.service.AuthIgnore;
 import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
 import com.cutout.server.service.VerityCodeService;
@@ -64,6 +65,7 @@ public class RegisterController {
      * @return
      */
     @RequestMapping(value = "/user", method = RequestMethod.POST)
+    @AuthIgnore
     public ResponseBean register(@RequestParam String email,@RequestParam String password,@RequestParam int code) {
 
         String message = messageCodeStorage.success_code;
@@ -118,6 +120,7 @@ public class RegisterController {
      * @return
      */
     @RequestMapping(value = "/user/{code}", method = RequestMethod.GET)
+    @AuthIgnore
     public ResponseBean checkCode(@PathVariable("code") String code) {
         String message = messageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();

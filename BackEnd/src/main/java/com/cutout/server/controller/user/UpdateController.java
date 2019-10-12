@@ -7,6 +7,7 @@ import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
+import com.cutout.server.service.AuthIgnore;
 import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
 import com.cutout.server.service.VerityCodeService;
@@ -77,6 +78,7 @@ public class UpdateController {
      * @return
      */
     @RequestMapping(value = "/email", method = RequestMethod.GET)
+    @AuthIgnore
     public ResponseBean getVerityCode(@RequestParam String email) {
         String message = messageCodeStorage.success_code;
         UserVerityCodeBean userVerityCodeBean = null;
@@ -114,6 +116,7 @@ public class UpdateController {
      * @return
      */
     @RequestMapping(value = "/email/{email}", method = RequestMethod.PATCH)
+    @AuthIgnore
     public ResponseBean resendCheckEmail(@PathVariable("email") String email) {
         String message = messageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
