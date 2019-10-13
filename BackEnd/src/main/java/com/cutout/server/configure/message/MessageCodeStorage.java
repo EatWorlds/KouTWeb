@@ -111,4 +111,9 @@ public class MessageCodeStorage {
      */
     public static final String user_already_login_error="user_already_login_error|100019|用户已登录";
 
+    /**
+     *messagecode :100020  messagevalue :邮箱为空
+     */
+    public static final String user_email_empty="user_email_empty|100020|邮箱为空";
+
 }

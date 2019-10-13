@@ -37,8 +37,8 @@ public class ProductController {
      * @param type
      * @return
      */
-    @RequestMapping(value = "/product/{type}", method = RequestMethod.GET)
-    public ResponseBean getProductInfo(@PathVariable("type") int type) {
+    @RequestMapping(value = "/product", method = RequestMethod.GET)
+    public ResponseBean getProductInfo(@RequestParam int type) {
         String message = messageCodeStorage.success_code;
         ProductBean productBean = null;
         try {

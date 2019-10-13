@@ -77,7 +77,7 @@ public class UpdateController {
      * @param email
      * @return
      */
-    @RequestMapping(value = "/email", method = RequestMethod.GET)
+    @RequestMapping(value = "/VerifiedCode", method = RequestMethod.GET)
     @AuthIgnore
     public ResponseBean getVerityCode(@RequestParam String email) {
         String message = messageCodeStorage.success_code;

@@ -85,4 +85,27 @@ public class UserInfoModel {
             throw new MessageException(messageCodeStorage.user_verity_code_error);
         }
     }
+
+    /**
+     * 验证用户邮箱有效性
+     *
+     * @param email
+     * @throws MessageException
+     */
+    public void checkUserEmail(String email) throws MessageException {
+
+        // 验证邮箱是否为空
+        if (StringUtils.isEmpty(email)) {
+            throw new MessageException(messageCodeStorage.user_email_empty);
+        }
+
+        // 判断邮箱格式是否正确
+        boolean isEmail = bases.isEmail(email);
+        if (!isEmail) {
+            throw new MessageException(messageCodeStorage.user_email_invalid);
+        }
+
+    }
+
+
 }

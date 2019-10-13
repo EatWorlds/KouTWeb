@@ -126,18 +126,18 @@ public class LoginController {
      * 用户退出
      *
      * @param email
-     * @param password
+     *
      * @return
      */
     @RequestMapping(value = "/user/logout", method = RequestMethod.POST)
-    public ResponseBean logout(@RequestParam String email, @RequestParam String password) {
+    public ResponseBean logout(@RequestParam String email) {
         String message = messageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
-            logger.info("logout = " + email + " pwd = " + password);
+            logger.info("logout = " + email);
 
             // 用户有效性校验
-            userInfoModel.checkUserInfo(email,password);
+            userInfoModel.checkUserEmail(email);
 
             // 验证用户信息是否存在
             UserInfoBean userInfoBean = userService.findUserByEmail(email);
