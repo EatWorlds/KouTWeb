@@ -23,35 +23,45 @@ public class MailServiceImpl implements MailService {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String to = userInfoBean.getEmail();
-                String subject = "注册验证";
+                try {
+                    String to = userInfoBean.getEmail();
+                    String subject = "注册验证";
 
-                String content = "<html><head></head><body><h1>这是一封激活邮件（24小时有效），激活请点击以下链接</h1><h3><a href='http://localhost:9099/v1/user/"
-                        + userInfoBean.getCode() + "'>http://61.160.212.32:49099/v1/user/" + userInfoBean.getCode()
-                        + "</href></h3></body></html>";
+                    String content = "<html><head></head><body><h1>这是一封激活邮件（24小时有效），激活请点击以下链接</h1><h3><a href='http://localhost:9099/v1/user/"
+                            + userInfoBean.getCode() + "'>http://61.160.212.32:49099/v1/user/" + userInfoBean.getCode()
+                            + "</href></h3></body></html>";
 
-                MailUtil.send(to,subject,content,true);
+                    MailUtil.send(to,subject,content,true);
+                } catch (Exception e) {
+                    logger.error("sendHtmlMail",e);
+                }
+
             }
         }).start();
 
     }
 
     @Override
-    public void sendVerityCode(UserVerityCodeBean userVerityCodeBean) {
+    public void sendVerifiedCode(UserVerityCodeBean userVerityCodeBean) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                String to = userVerityCodeBean.getEmail();
+                try {
+                    String to = userVerityCodeBean.getEmail();
 
-                String subject = "您的校验码";
+                    String subject = "您";
 
-                StringBuilder stringBuilder = new StringBuilder();
-                String content = stringBuilder.append("您的校验码是：")
-                                                .append(userVerityCodeBean.getVerity_code())
-                                                .append("。")
-                                                .append("该验证码五分钟内有效，请尽快使用！")
-                                                .toString();
-                MailUtil.send(to,subject,content,false);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String content = stringBuilder.append("您：")
+                            .append(userVerityCodeBean.getVerity_code())
+                            .append("。")
+                            .append("该！")
+                            .toString();
+                    MailUtil.send(to,subject,content,false);
+                } catch (Exception e) {
+                    logger.error("sendVerifiedCode",e);
+                }
+
             }
         }).start();
     }

@@ -15,5 +15,5 @@ public interface MailService {
      * 注册/忘记密码，发送验证码到邮箱
      * @param userVerityCodeBean
      */
-    void sendVerityCode(UserVerityCodeBean userVerityCodeBean);
+    void sendVerifiedCode(UserVerityCodeBean userVerityCodeBean);
 }

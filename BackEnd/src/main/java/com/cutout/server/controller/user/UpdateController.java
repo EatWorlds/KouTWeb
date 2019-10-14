@@ -100,7 +100,7 @@ public class UpdateController {
             }
 
             logger.info("UpdateController userVerityCodeBean = " + JSON.toJSONString(userVerityCodeBean));
-            mailService.sendVerityCode(userVerityCodeBean);
+            mailService.sendVerifiedCode(userVerityCodeBean);
         } catch (MessageException messageException) {
             message = messageException.getMessage();
         } catch (Exception e) {
