@@ -87,7 +87,8 @@
                 <div class="form-group">
                   <button type="submit" class="btn btn-default btn_login">登录</button>
                 </div>
-                <div class="form-group">
+                <div class="forgetPassword">
+                  <a href="#" data-toggle="modal" data-dismiss="modal" data-target="#forgetPassword">忘记密码</a>
                   <a href="#" @click="setZinex" data-toggle="modal" data-dismiss="modal" data-target="#registeredModel">没有账号？去注册</a>
                 </div>
             </form>
@@ -131,6 +132,87 @@
                   class="btn btn-default btn_login"
                   @click="postRegistereted()"
                   >注册</button>
+                </div>
+                <div class="form-group">
+                  <a href="#" data-toggle="modal" data-dismiss="modal" data-target="#loginModal">已有账号？去登陆</a>
+                </div>
+            </form>
+          </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal -->
+    </div>
+
+    <!-- 找回密码 -->
+    <div class="modal fade" id="forgetPassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="model model_login_title">
+           <h3>忘记密码</h3>
+          <div class="modal-body">
+             <form id="addForm">
+                <div class="form-group" enctype="multipart/form-data">
+                  <label for="exampleInputEmail1">邮箱</label>
+                  <input type="email" class="form-control inputTextStyle" id="rInputEmail1" placeholder="请输入邮箱">
+                </div>
+                <div class="form-group">
+                  <input type="String " class="form-control inputNoCodeStyle" id="rInputCode" placeholder="请输入验证码">
+                  <button 
+                    id="btnCode"
+                    style="margin-left:20px;" 
+                    class="btn" 
+                    type="button"
+                    @click="getCode()"
+                    >获取验证码</button>
+                </div>
+                <div class="form-group">
+                  <a href="#"
+                  class="btn btn-default firstNext" 
+                  data-toggle="modal" 
+                  data-dismiss="modal" 
+                  data-target="#updatePassword"
+                  >下一步</a>
+                </div>
+                <div class="form-group">
+                  <a href="#" 
+                  data-toggle="modal" 
+                  data-dismiss="modal" 
+                  data-target="#loginModal"
+                  >已有账号？去登陆</a>
+                </div>
+            </form>
+          </div>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal -->
+    </div>
+
+    <!-- 修改密码 -->
+    <div class="modal fade" id="updatePassword" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="model model_login_title">
+           <h3>修改密码</h3>
+          <div class="modal-body">
+             <form id="addForm">
+                <div class="form-group">
+                  <input type="password" class="form-control inputNoTextStyle" id="updatePassword" placeholder="请输入6-30位字母、数字的密码">
+                </div>
+                <div class="hintText" id="hintText" style="display: none">
+                  <p>请输入6-30位字母、数字的密码</p>
+                </div>
+                <!-- 确认密码 -->
+                <div class="form-group">
+                  <input type="password" class="form-control inputNoTextStyle" id="confirmPassword" placeholder="确认密码">
+                </div>
+                <div class="hintText" id="hintText" style="display: none">
+                  <p>两次密码输入不一致</p>
+                </div>
+                <div class="form-group">
+                  <button 
+                  type="submit" 
+                  class="btn btn-default btn_login"
+                  >确认</button>
                 </div>
                 <div class="form-group">
                   <a href="#" data-toggle="modal" data-dismiss="modal" data-target="#loginModal">已有账号？去登陆</a>
@@ -282,6 +364,16 @@ export default {
     color:red;
   }
 
+  /* 忘记密码文字 */
+  .forgetPassword{
+    color: red;
+    margin-left: 40px;
+  }
+
+  .forgetPassword a:last-child{
+    margin-left: 170px;
+  }
+
   .btn-registered{
     margin-left:10px;
   }
@@ -353,5 +445,16 @@ export default {
     background: #2263fe;
   }
 
+  .firstNext{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 350px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: #2263fe;
+  }
 
 </style>
