@@ -6,7 +6,7 @@ import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 /**
  * 验证码相关
  */
-public interface VerityCodeService
+public interface VerifiedCodeService
 {
 
     /**

@@ -10,7 +10,7 @@ import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 import com.cutout.server.service.AuthIgnore;
 import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
-import com.cutout.server.service.VerityCodeService;
+import com.cutout.server.service.VerifiedCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.ResponseHelperUtil;
 import com.cutout.server.utils.UUIDUtil;
@@ -43,7 +43,7 @@ public class UpdateController {
     private MailService mailService;
 
     @Autowired
-    private VerityCodeService verityCodeService;
+    private VerifiedCodeService verifiedCodeService;
 
     @Autowired
     private Bases bases;
@@ -79,16 +79,16 @@ public class UpdateController {
      */
     @RequestMapping(value = "/VerifiedCode", method = RequestMethod.GET)
     @AuthIgnore
-    public ResponseBean getVerityCode(@RequestParam String email) {
+    public ResponseBean getVerifiedCode(@RequestParam String email) {
         String message = messageCodeStorage.success_code;
         UserVerityCodeBean userVerityCodeBean = null;
         try {
-            logger.info("getVerityCode email = " + email);
-            userVerityCodeBean = verityCodeService.findVerityCodeByEmail(email);
+            logger.info("getVerifiedCode email = " + email);
+            userVerityCodeBean = verifiedCodeService.findVerityCodeByEmail(email);
 
             // 如果没有该用户，则直接新建一条数据到数据库
             if (userVerityCodeBean == null) {
-                userVerityCodeBean = verityCodeService.addVerityCode(email);
+                userVerityCodeBean = verifiedCodeService.addVerityCode(email);
             } else { // 如果有该用户，进行相应的判断以及修改
                 int lastTime = userVerityCodeBean.getUpdate_time();
                 // 请求时间在60之内的，提示操作过于频繁
@@ -96,7 +96,7 @@ public class UpdateController {
                     throw new MessageException(messageCodeStorage.request_busy);
                 }
 
-                userVerityCodeBean = verityCodeService.updateVerityCodeByEmail(userVerityCodeBean);
+                userVerityCodeBean = verifiedCodeService.updateVerityCodeByEmail(userVerityCodeBean);
             }
 
             logger.info("UpdateController userVerityCodeBean = " + JSON.toJSONString(userVerityCodeBean));

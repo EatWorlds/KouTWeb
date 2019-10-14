@@ -6,12 +6,12 @@ import com.cutout.server.model.UserMongoModel;
 import com.cutout.server.model.UserVerityCodeModel;
 import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
-import com.cutout.server.service.VerityCodeService;
+import com.cutout.server.service.VerifiedCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class VerityCodeServiceImpl implements VerityCodeService {
+public class VerityCodeServiceImpl implements VerifiedCodeService {
 
     @Autowired
     private UserVerityCodeModel userVerityCodeModel;

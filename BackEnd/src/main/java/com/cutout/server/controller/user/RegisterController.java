@@ -1,5 +1,6 @@
 package com.cutout.server.controller.user;
 
+import cn.hutool.crypto.SecureUtil;
 import com.alibaba.fastjson.JSON;
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
@@ -11,13 +12,13 @@ import com.cutout.server.model.UserInfoModel;
 import com.cutout.server.service.AuthIgnore;
 import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
-import com.cutout.server.service.VerityCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.ResponseHelperUtil;
 import com.cutout.server.utils.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -47,9 +48,6 @@ public class RegisterController {
 
     @Autowired
     private UserInfoModel userInfoModel;
-
-    @Autowired
-    private VerityCodeService verityCodeService;
 
     @Autowired
     private MailService mailService;
@@ -88,7 +86,7 @@ public class RegisterController {
 
             userInfoBean = new UserInfoBean();
             userInfoBean.setEmail(email);
-            userInfoBean.setPassword(password);
+            userInfoBean.setPassword(userInfoModel.encodePassword(password));
 
             userInfoBean = userService.addUser(userInfoBean);
             // 没存储成功，返回注册失败
@@ -125,6 +123,7 @@ public class RegisterController {
         String message = messageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
+
             logger.info("code = " + code);
             UserInfoBean userInfoBean = userService.findUserByCode(code);
             if (userInfoBean == null) {

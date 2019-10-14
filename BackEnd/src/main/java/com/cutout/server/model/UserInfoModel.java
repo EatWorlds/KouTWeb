@@ -6,7 +6,7 @@ import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
-import com.cutout.server.service.VerityCodeService;
+import com.cutout.server.service.VerifiedCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.UUIDUtil;
 import com.mongodb.client.result.DeleteResult;
@@ -18,6 +18,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -34,7 +35,7 @@ public class UserInfoModel {
     private Bases bases;
 
     @Autowired
-    private VerityCodeService verityCodeService;
+    private VerifiedCodeService verifiedCodeService;
 
     /**
      * 校验邮箱，密码是否有效
@@ -69,7 +70,7 @@ public class UserInfoModel {
             throw new MessageException(messageCodeStorage.user_verity_code_empty);
         }
 
-        UserVerityCodeBean userVerityCodeBean = verityCodeService.findVerityCodeByEmail(email);
+        UserVerityCodeBean userVerityCodeBean = verifiedCodeService.findVerityCodeByEmail(email);
         logger.info("UserInfoModel checkVerityCode userVerityCodeBean = " + JSON.toJSONString(userVerityCodeBean));
         // 没有信息，也给验证码无效的提示
         if (userVerityCodeBean == null) {
@@ -105,6 +106,32 @@ public class UserInfoModel {
             throw new MessageException(messageCodeStorage.user_email_invalid);
         }
 
+    }
+
+    /**
+     * 对密码进行加密
+     *
+     * @param password
+     * @return
+     */
+    public String encodePassword(String password) {
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        String hashPass = bcryptPasswordEncoder.encode(password);
+        logger.info("encode hashPass = " + hashPass);
+        return hashPass;
+    }
+
+    /**
+     * 对密码进行比较
+     *
+     * @param rawPassword
+     * @param encodedPassword
+     * @return
+     */
+    public boolean isPasswordRight(String rawPassword,String encodedPassword) {
+        BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+        boolean f = bcryptPasswordEncoder.matches(rawPassword,encodedPassword);
+        return f;
     }
 
 

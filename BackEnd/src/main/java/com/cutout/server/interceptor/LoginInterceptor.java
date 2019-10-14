@@ -10,6 +10,7 @@ import com.cutout.server.service.UserService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.JwtTokenUtil;
 import com.cutout.server.utils.ResponseHelperUtil;
+import com.cutout.server.utils.ResponseMsgUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,9 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private Bases bases;
 
+    @Autowired
+    private ResponseMsgUtil responseMsgUtil;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -65,7 +69,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         String token = request.getHeader(ConstantConfigure.USER_TOKEN_KEY);
         logger.info("LoginInterceptor preHandle token = " + token);
         if (StringUtils.isEmpty(token)) {
-            out(response,messageCodeStorage.user_token_invalid);
+            responseMsgUtil.out(response,messageCodeStorage.user_token_invalid);
             return false;
         }
 
@@ -76,18 +80,18 @@ public class LoginInterceptor implements HandlerInterceptor {
         UserInfoBean userInfoBean = userService.findUserByEmail(userEmail);
         logger.info("LoginInterceptor userInfoBean = " + JSON.toJSONString(userInfoBean));
         if (userInfoBean == null) {
-            out(response,messageCodeStorage.user_not_exists_error);
+            responseMsgUtil.out(response,messageCodeStorage.user_not_exists_error);
             return false;
         }
 
         if (StringUtils.isEmpty(userInfoBean.getToken())) {
-            out(response,messageCodeStorage.user_not_login_error);
+            responseMsgUtil.out(response,messageCodeStorage.user_not_login_error);
             return false;
         }
 
         // 如果传递的token和数据库的token对不上，说明已经重新登录过了
         if (!userInfoBean.getToken().equals(token)) {
-            out(response,messageCodeStorage.user_token_invalid);
+            responseMsgUtil.out(response,messageCodeStorage.user_token_invalid);
             return false;
         }
 
@@ -95,7 +99,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (bases.getSystemSeconds() - userInfoBean.getLast_login() > ConstantConfigure.TOKEN_INVALID_TIME) {
             // 需要删除token
             userService.cleanUserToken(token);
-            out(response,messageCodeStorage.user_token_out_of_time);
+            responseMsgUtil.out(response,messageCodeStorage.user_token_out_of_time);
             return false;
         }
 
@@ -123,38 +127,5 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     }
 
-    /**
-     * 在拦截器中发送错误信息
-     *
-     * @param response
-     * @param messageKey
-     */
-    public void out(HttpServletResponse response,String messageKey) {
-        out(response,messageKey,"");
-    }
 
-    public void out(HttpServletResponse response, String messageKey, String data) {
-        // ObjectMapper objectMapper = new ObjectMapper();
-        response.setCharacterEncoding("UTF-8");
-        response.setContentType("application/json; charset=utf-8");
-
-        OutputStream outputStream = null;
-        try {
-            outputStream = response.getOutputStream();
-            String json = new ObjectMapper().writeValueAsString(responseHelperUtil.returnMessage(messageKey,data));
-            outputStream.write(json.getBytes());
-            outputStream.flush();
-            outputStream.close();
-        } catch (IOException e) {
-            logger.error("IO",e);
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    logger.error("IO",e);
-                }
-            }
-        }
-    }
 }

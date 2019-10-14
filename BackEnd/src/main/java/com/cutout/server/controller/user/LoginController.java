@@ -62,23 +62,23 @@ public class LoginController {
     /**
      * 用户登录，返回用户个人信息
      *
-     * @param email
+     * @param username
      * @param password
      * @return
      */
     @RequestMapping(value = "/user/login", method = RequestMethod.POST)
     @AuthIgnore
-    public ResponseBean login(@RequestParam String email, @RequestParam String password) {
+    public ResponseBean login(@RequestParam String username, @RequestParam String password) {
 
         String message = messageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
 
             // 用户有效性校验
-            userInfoModel.checkUserInfo(email,password);
+            userInfoModel.checkUserInfo(username,password);
 
             // 验证用户信息是否存在
-            UserInfoBean userInfoBean = userService.findUserByEmail(email);
+            UserInfoBean userInfoBean = userService.findUserByEmail(username);
             logger.info("result ==" + userInfoBean);
             if (userInfoBean == null) {
                 throw new MessageException(messageCodeStorage.user_not_exists_error);
@@ -95,8 +95,7 @@ public class LoginController {
             }
 
             // 验证密码是否正确
-            String pwd = userInfoBean.getPassword();
-            if (!password.equals(pwd)) {
+            if (!userInfoModel.isPasswordRight(password,userInfoBean.getPassword())) {
                 throw new MessageException(messageCodeStorage.user_login_email_password_error);
             }
 
@@ -104,9 +103,9 @@ public class LoginController {
             String token = jwtTokenUtil.generateToken(userInfoBean);
 
             result.put("token",token);
-            result.put("email",email);
+            result.put("email",username);
 
-            userService.updateUserWithLogin(email,token);
+            userService.updateUserWithLogin(username,token);
 //            Map<String,Object> result = jwtTokenUtil.verify(token,userInfoBean);
 //            // Mon Sep 23 17:46:33 CST 2019
 //            Date time = (Date)result.get("time");

@@ -4,6 +4,7 @@ import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.response.ResponseBean;
+import com.cutout.server.service.AuthIgnore;
 import com.cutout.server.service.ProductService;
 import com.cutout.server.utils.ResponseHelperUtil;
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ public class ProductController {
      * @return
      */
     @RequestMapping(value = "/product", method = RequestMethod.GET)
+    @AuthIgnore
     public ResponseBean getProductInfo(@RequestParam int type) {
         String message = messageCodeStorage.success_code;
         ProductBean productBean = null;

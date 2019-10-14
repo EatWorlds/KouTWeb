@@ -6,6 +6,7 @@ import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
+import com.cutout.server.model.UserInfoModel;
 import com.cutout.server.service.AuthIgnore;
 import com.cutout.server.service.ProductService;
 import com.cutout.server.utils.JwtTokenUtil;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
@@ -48,6 +50,9 @@ public class TestController {
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private UserInfoModel userInfoModel;
 
     /**
      * 获取产品描述信息，主要是价格列表等
@@ -85,12 +90,28 @@ public class TestController {
     }
 
     @RequestMapping(value = "/test1", method = RequestMethod.GET)
+    @AuthIgnore
     public ResponseBean getTestInfo1(@RequestParam String info, HttpServletRequest request) {
         String message = messageCodeStorage.success_code;
 
         try {
-            Object object = request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
-            logger.info("object === " + JSON.toJSONString(object));
+//            Object object = request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
+//            logger.info("object === " + JSON.toJSONString(object));
+
+            String pass = info;
+            BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder();
+            String hashPass = bcryptPasswordEncoder.encode(pass);
+            System.out.println(hashPass);
+
+            boolean f = new BCryptPasswordEncoder().matches(info,"$2a$10$t4BpXV4KNPV/SQn6D2w7FOaOdwnhOhI5JK4YiTy4/vFzs4sAMb4Cy");
+            System.out.println(f);
+
+            String result = userInfoModel.encodePassword(info);
+            logger.info("result ============== " + result);
+
+            boolean is = userInfoModel.isPasswordRight(info,"$2a$10$t4BpXV4KNPV/SQn6D2w7FOaOdwnhOhI5JK4YiTy4/vFzs4sAMb4Ce");
+            logger.info("is = " + is);
+
         } catch (Exception e) {
 
         }
