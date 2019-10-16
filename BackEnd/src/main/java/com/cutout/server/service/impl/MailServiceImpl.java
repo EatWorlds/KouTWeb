@@ -49,13 +49,13 @@ public class MailServiceImpl implements MailService {
                 try {
                     String to = userVerityCodeBean.getEmail();
 
-                    String subject = "您";
+                    String subject = "您的校验码";
 
                     StringBuilder stringBuilder = new StringBuilder();
-                    String content = stringBuilder.append("您：")
+                    String content = stringBuilder.append("您的校验码是：")
                             .append(userVerityCodeBean.getVerity_code())
                             .append("。")
-                            .append("该！")
+                            .append("该验证码五分钟内有效，请尽快使用！")
                             .toString();
                     MailUtil.send(to,subject,content,false);
                 } catch (Exception e) {
