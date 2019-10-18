@@ -5,8 +5,16 @@ import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.AlipayTradePagePayModel;
 import com.alipay.api.request.AlipayTradePagePayRequest;
+import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.configure.pay.AlipayProperties;
+import com.cutout.server.constant.ConstantConfigure;
+import com.cutout.server.domain.bean.product.ProductDetailBean;
+import com.cutout.server.domain.bean.response.ResponseBean;
+import com.cutout.server.service.AlipayService;
+import com.cutout.server.utils.ResponseHelperUtil;
 import com.cutout.server.utils.UUIDUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -30,8 +40,7 @@ import java.io.UnsupportedEncodingException;
 @RequestMapping("/v1/alipay/page")
 public class AlipayPagePayController {
 
-    @Autowired
-    private AlipayClient alipayClient;
+    private Logger logger = LoggerFactory.getLogger(AlipayPagePayController.class);
 
     @Autowired
     private AlipayProperties alipayProperties;
@@ -40,41 +49,39 @@ public class AlipayPagePayController {
     private AlipayController alipayController;
 
     @Autowired
-    private UUIDUtil uuidUtil;
+    private AlipayService alipayService;
+
+    @Autowired
+    private ResponseHelperUtil responseHelperUtil;
+
+    @Autowired
+    private MessageCodeStorage messageCodeStorage;
 
     @PostMapping("/pagePay")
-    public void alipayPage(HttpServletResponse response) throws IOException {
-        String productCode = "FAST_INSTANT_TRADE_PAY";
-        AlipayTradePagePayModel model = new AlipayTradePagePayModel();
-        model.setOutTradeNo(uuidUtil.getUUIDCode());// 待规则制定
-        model.setSubject("AlipayTest");
-        model.setTotalAmount("0.1");// 支付金额
-        model.setBody("AlipayTest 0.1");
-        model.setProductCode(productCode);
-
-        AlipayTradePagePayRequest pagePayRequest = new AlipayTradePagePayRequest();
-        pagePayRequest.setReturnUrl("");// 回调地址
-        pagePayRequest.setNotifyUrl("");// 支付宝异步通知地址
-        pagePayRequest.setBizModel(model);
-
-        String form = "";
+    public ResponseBean alipayPage(HttpServletResponse response, String email,ProductDetailBean productDetailBean) throws IOException {
+        String message = messageCodeStorage.success_code;
+        Map<String,String> map = new HashMap<>();
         try {
-            form = alipayClient.pageExecute(pagePayRequest).getBody();
-        } catch (AlipayApiException e) {
-
+            String form = alipayService.createPagePayOrder(productDetailBean);
+            map.put(ConstantConfigure.RESULT_EMAIL,email);
+            response.setContentType("text/html;charset=" + alipayProperties.getCharset());
+            response.getWriter().write(form);
+            response.getWriter().flush();
+            response.getWriter().close();
+        } catch (AlipayApiException alipayException) {
+            message = messageCodeStorage.user_create_order_failed;
+        } catch (IOException ioException){
+            message = messageCodeStorage.user_create_order_failed;
+        } catch (Exception e) {
+            message = messageCodeStorage.user_create_order_failed;
         }
-
-        response.setContentType("text/html;charset=" + alipayProperties.getCharset());
-        response.getWriter().write(form);
-        response.getWriter().flush();
-        response.getWriter().close();
-
+        return responseHelperUtil.returnMessage(message,map);
     }
 
     @RequestMapping("/returnUrl")
     public String returnUrl(HttpServletResponse response,HttpServletRequest request) throws UnsupportedEncodingException,AlipayApiException {
         response.setContentType("text/html;charset="+alipayProperties.getCharset());
-        boolean verifyResult = alipayController.rsaCheckV1(request);
+        boolean verifyResult = alipayService.rsaCheckV1(request);
         if (verifyResult) {
             // 验证成功
             // 请在这里机上商户的业务逻辑程序代码，如保存支付宝交易号

@@ -116,4 +116,9 @@ public class MessageCodeStorage {
      */
     public static final String user_email_empty="user_email_empty|100020|邮箱为空";
 
+    /**
+     *messagecode :100021  messagevalue :创建订单失败
+     */
+    public static final String user_create_order_failed="user_create_order_failed|100021|创建订单失败";
+
 }
