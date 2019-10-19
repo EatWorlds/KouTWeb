@@ -8,6 +8,7 @@ import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.configure.pay.AlipayProperties;
 import com.cutout.server.constant.ConstantConfigure;
+import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.service.AlipayService;
@@ -57,12 +58,21 @@ public class AlipayPagePayController {
     @Autowired
     private MessageCodeStorage messageCodeStorage;
 
+    /**
+     *
+     * @param response
+     * @param email  下订单的用户
+     * @param type    订单类型 0：人脸
+     * @param productDetailBean 订单详情
+     * @return
+     * @throws IOException
+     */
     @PostMapping("/pagePay")
-    public ResponseBean alipayPage(HttpServletResponse response, String email,ProductDetailBean productDetailBean) throws IOException {
+    public ResponseBean alipayPage(HttpServletResponse response, String email, int type,ProductDetailBean productDetailBean) {
         String message = messageCodeStorage.success_code;
         Map<String,String> map = new HashMap<>();
         try {
-            String form = alipayService.createPagePayOrder(productDetailBean);
+            String form = alipayService.createPagePayOrder(email,type,productDetailBean);
             map.put(ConstantConfigure.RESULT_EMAIL,email);
             response.setContentType("text/html;charset=" + alipayProperties.getCharset());
             response.getWriter().write(form);

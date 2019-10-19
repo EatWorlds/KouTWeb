@@ -25,5 +25,10 @@ public interface VerifiedCodeService
      */
     UserVerityCodeBean findVerityCodeByEmail(String email);
 
+    /**
+     * 通过邮箱，更新验证码表
+     * @param userVerityCodeBean
+     * @return
+     */
     UserVerityCodeBean updateVerityCodeByEmail(UserVerityCodeBean userVerityCodeBean);
 }

@@ -7,7 +7,9 @@ import com.alipay.api.domain.AlipayTradePagePayModel;
 import com.alipay.api.internal.util.AlipaySignature;
 import com.alipay.api.request.AlipayTradePagePayRequest;
 import com.cutout.server.configure.pay.AlipayProperties;
+import com.cutout.server.domain.bean.OrderInfoBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
+import com.cutout.server.model.OrderInfoModel;
 import com.cutout.server.service.AlipayService;
 import com.cutout.server.utils.UUIDUtil;
 import org.slf4j.Logger;
@@ -16,9 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class AlipayServiceImpl implements AlipayService {
@@ -34,16 +34,34 @@ public class AlipayServiceImpl implements AlipayService {
     @Autowired
     private AlipayProperties alipayProperties;
 
+    @Autowired
+    private OrderInfoModel orderInfoModel;
+
+    /**
+     * 创建支付宝电脑网站支付的订单
+     * @param email
+     * @param type
+     * @param productDetailBean
+     * @return
+     * @throws AlipayApiException
+     */
     @Override
-    public String createPagePayOrder(ProductDetailBean productDetailBean) throws AlipayApiException {
+    public String createPagePayOrder(String email, int type, ProductDetailBean productDetailBean) throws AlipayApiException {
+
 
         String productCode = "FAST_INSTANT_TRADE_PAY";
         AlipayTradePagePayModel model = new AlipayTradePagePayModel();
-        model.setOutTradeNo(uuidUtil.getUUIDCode());// 待规则制定
-        model.setSubject(productDetailBean.getTitle());
+        // 设置商户号
+        String outTradeNo = uuidUtil.getUUIDCode();
         String amount = productDetailBean.getPrice() * productDetailBean.getDiscount() + "";
+
+        OrderInfoBean orderInfoBean = orderInfoModel.createOrderInfo(outTradeNo, email, amount, type, 0, productDetailBean);
+
+        model.setOutTradeNo(outTradeNo);
+        model.setSubject(productDetailBean.getTitle());
+
         model.setTotalAmount(amount);// 支付金额
-        model.setBody(JSON.toJSONString(productDetailBean));
+        model.setBody(JSON.toJSONString(orderInfoBean));
         model.setProductCode(productCode);
 
         AlipayTradePagePayRequest pagePayRequest = new AlipayTradePagePayRequest();
@@ -53,6 +71,10 @@ public class AlipayServiceImpl implements AlipayService {
 
         // 这个过程会产生订单生成失败的情况
         String form = alipayClient.pageExecute(pagePayRequest).getBody();
+
+        // 记录订单到mongodb数据库
+        orderInfoBean = orderInfoModel.addOrderInfo(orderInfoBean);
+
         return form;
     }
 
@@ -67,34 +89,34 @@ public class AlipayServiceImpl implements AlipayService {
         try {
             // https://docs.open.alipay.com/54/106370
             // 获取支付宝POST过来反馈信息
-            Map<String,String> params = new HashMap<>();
+            Map<String, String> params = new HashMap<>();
             Map requestParams = request.getParameterMap();
-            for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext();) {
-                String name = (String)iter.next();
-                String[] values = (String[])requestParams.get(name);
+            for (Iterator iter = requestParams.keySet().iterator(); iter.hasNext(); ) {
+                String name = (String) iter.next();
+                String[] values = (String[]) requestParams.get(name);
                 String valueStr = "";
-                for (int i = 0;i < values.length; i++) {
-                     valueStr = (i == values.length - 1) ? valueStr + values[i]
-                        : valueStr + values[i] + ",";
+                for (int i = 0; i < values.length; i++) {
+                    valueStr = (i == values.length - 1) ? valueStr + values[i]
+                            : valueStr + values[i] + ",";
                 }
                 //乱码解决，这段代码在出现乱码时使用。
                 //valueStr = new String(valueStr.getBytes("ISO-8859-1"), "utf-8");
-                params.put(name,valueStr);
+                params.put(name, valueStr);
             }
-
 
             // 切记alipaypublickey是支付宝的公钥，请去open.alipay.com对应应用下查看。
             // boolean AlipaySignature.rsaCheckV1(Map<String, String> params, String publicKey, String charset, String sign_type)
-            boolean verifyResult = AlipaySignature.rsaCheckV1(params, alipayProperties.getAlipayPublicKey(), alipayProperties.getCharset(),alipayProperties.getSignType());
+            boolean verifyResult = AlipaySignature.rsaCheckV1(params, alipayProperties.getAlipayPublicKey(), alipayProperties.getCharset(), alipayProperties.getSignType());
             return verifyResult;
         } catch (AlipayApiException e) {
-            logger.error("AlipayController rsaCheckV1 AlipayApiException",e);
+            logger.error("AlipayController rsaCheckV1 AlipayApiException", e);
             return false;
         }
     }
 
     /**
      * 校验通知数据的正确性
+     *
      * @param request
      * @return
      */
@@ -113,22 +135,34 @@ public class AlipayServiceImpl implements AlipayService {
          * 在上述验证通过后商户必须根据支付宝不同类型的业务通知，正确的进行不同的业务处理，并且过滤重复的通知结果数据。
          * 在支付宝的业务通知中，只有交易通知状态为TRADE_SUCCESS或TRADE_FINISHED时，支付宝才会认定为买家付款成功。
          */
+        StringBuilder stringBuilder = new StringBuilder();
         // 交易状态
 //        String tradeStatus = new String(request.getParameter("trade_status").getBytes(charsetName1),charsetName2);
         String tradeStatus = new String(request.getParameter("trade_status"));
+        stringBuilder.append("tradeStatus").append(tradeStatus);
         // 商户订单号
 //        String out_trade_no = new String(request.getParameter("out_trade_no").getBytes(charsetName1),charsetName2);
         String out_trade_no = new String(request.getParameter("out_trade_no"));
+        stringBuilder.append("out_trade_no").append(out_trade_no);
         // 支付宝交易号
 //        String trade_no = new String(request.getParameter("trade_no").getBytes(charsetName1),charsetName2);
         String trade_no = new String(request.getParameter("trade_no"));
+        stringBuilder.append("trade_no").append(trade_no);
         // 付款金额
 //        String total_amount = new String(request.getParameter("total_amount").getBytes(charsetName1),charsetName2);
         String total_amount = new String(request.getParameter("total_amount"));
-        logger.info("tradeStatus = " + tradeStatus);
+        stringBuilder.append("total_amount").append(total_amount);
+
+        String seller_id = new String(request.getParameter("seller_id"));
+        stringBuilder.append("seller_id").append(seller_id);
+
+        String body = new String(request.getParameter("body"));
+        stringBuilder.append("body").append(body);
+
+        logger.info("stringBuilder = " + stringBuilder);
         // TRADE_FINISHED(表示交易已经成功结束，并不能再对该交易做后续操作);
         // TRADE_SUCCESS(表示交易已经成功结束，可以对该交易做后续操作，如：分润、退款等);
-        if(tradeStatus.equals("TRADE_FINISHED")){
+        if (tradeStatus.equals("TRADE_FINISHED")) {
             //判断该笔订单是否在商户网站中已经做过处理
             //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，
             // 并判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），并执行商户的业务程序
@@ -138,7 +172,7 @@ public class AlipayServiceImpl implements AlipayService {
             //注意：
             //如果签约的是可退款协议，退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
             //如果没有签约可退款协议，那么付款完成后，支付宝系统发送该交易状态通知。
-        } else if (tradeStatus.equals("TRADE_SUCCESS")){
+        } else if (tradeStatus.equals("TRADE_SUCCESS")) {
             //判断该笔订单是否在商户网站中已经做过处理
             //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，
             // 并判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），并执行商户的业务程序

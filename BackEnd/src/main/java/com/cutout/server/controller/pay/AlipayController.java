@@ -2,8 +2,6 @@ package com.cutout.server.controller.pay;
 
 
 import com.alipay.api.AlipayApiException;
-import com.alipay.api.internal.util.AlipaySignature;
-import com.cutout.server.configure.pay.AlipayProperties;
 import com.cutout.server.service.AlipayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,8 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @RestController

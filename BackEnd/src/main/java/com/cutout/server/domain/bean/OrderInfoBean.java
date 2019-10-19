@@ -5,7 +5,7 @@ import com.cutout.server.domain.bean.product.ProductDetailBean;
 import lombok.Data;
 
 @Data
-public class OrderBean {
+public class OrderInfoBean {
 
     /**
      * 用户id
@@ -13,12 +13,17 @@ public class OrderBean {
     private String userId;
 
     /**
+     * 用户email信息
+     */
+    private String email;
+
+    /**
      * 创建时间
      */
     private int create_time;
 
     /**
-     * 修改时间
+     * 订单支付成功，创建修改时间，否则不更新
      */
     private int update_time;
 
@@ -30,10 +35,20 @@ public class OrderBean {
     /**
      * 实际支付金额
      */
-    private int amount;
+    private String amount;
+
+    /**
+     * 商户订单号
+     */
+    private String out_trade_no;
+
+    /**
+     * 需要使用的产品功能，0：人脸
+     */
+    private int type;
 
     /**
      * 订单产品
      */
-    private ProductBean product;
+    private ProductDetailBean productDetailBean;
 }
