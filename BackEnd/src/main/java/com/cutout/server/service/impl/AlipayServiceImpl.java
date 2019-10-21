@@ -12,12 +12,15 @@ import com.cutout.server.domain.bean.product.ProductDetailBean;
 import com.cutout.server.model.OrderInfoModel;
 import com.cutout.server.service.AlipayService;
 import com.cutout.server.utils.UUIDUtil;
+import com.ijpay.alipay.AliPayApi;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 
 @Component
@@ -172,6 +175,7 @@ public class AlipayServiceImpl implements AlipayService {
             //注意：
             //如果签约的是可退款协议，退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
             //如果没有签约可退款协议，那么付款完成后，支付宝系统发送该交易状态通知。
+            return true;
         } else if (tradeStatus.equals("TRADE_SUCCESS")) {
             //判断该笔订单是否在商户网站中已经做过处理
             //如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，
@@ -181,8 +185,36 @@ public class AlipayServiceImpl implements AlipayService {
 
             //注意：
             //如果签约的是可退款协议，那么付款完成后，支付宝系统发送该交易状态通知。
+            return true;
 
         }
         return false;
+    }
+
+    @Override
+    public void createPcPayOrder(HttpServletResponse response, String email, int type, ProductDetailBean productDetailBean) throws AlipayApiException, IOException {
+
+        String productCode = "FAST_INSTANT_TRADE_PAY";
+        // 设置商户号
+        String outTradeNo = uuidUtil.getUUIDCode();
+        String amount = productDetailBean.getPrice() * productDetailBean.getDiscount() + "";
+
+        // 创建订单之前，先查询是否有同类订单，待完成
+
+        // 创建订单
+        OrderInfoBean orderInfoBean = orderInfoModel.createOrderInfo(outTradeNo, email, amount, type, 0, productDetailBean);
+
+        AlipayTradePagePayModel model = new AlipayTradePagePayModel();
+        model.setOutTradeNo(outTradeNo);
+        model.setProductCode(productCode);
+        model.setTotalAmount(amount);// 支付金额
+        model.setSubject(productDetailBean.getTitle());
+        model.setBody(JSON.toJSONString(orderInfoBean));
+
+        // 会有 AlipayApiException, IOException 的错误
+        AliPayApi.tradePage(response,model,alipayProperties.getNotifyUrl(),alipayProperties.getReturnUrl());
+
+        // 记录订单到mongodb数据库
+        orderInfoBean = orderInfoModel.addOrderInfo(orderInfoBean);
     }
 }

@@ -60,6 +60,16 @@ public class AlipayProperties {
      */
     private String notifyUrl;
 
+    /**
+     * 支付宝支付网关
+     */
+    private String serverUrl;
+
+    /**
+     * 外网访问项目的域名，支付通知中会使用
+     */
+    private String domain;
+
     /** 最大查询次数 */
     private static int maxQueryRetry = 5;
 

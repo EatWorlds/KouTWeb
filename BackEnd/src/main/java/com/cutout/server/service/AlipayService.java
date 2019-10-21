@@ -4,6 +4,8 @@ import com.alipay.api.AlipayApiException;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public interface AlipayService {
 
@@ -30,4 +32,6 @@ public interface AlipayService {
      * @return
      */
     boolean checkNotify(HttpServletRequest request);
+
+    void createPcPayOrder(HttpServletResponse response, String email, int type, ProductDetailBean productDetailBean) throws AlipayApiException, IOException;
 }
