@@ -22,9 +22,22 @@ public class WxpayProperties {
     private String certPath;
     private String domain;
 
+    @PostConstruct
+    public void init() {
+        logger.info(description());
+        logger.info(toString());
+    }
     @Override
     public String toString() {
         return "WxpayProperties [appId=" + appId + ", appSecret=" + appSecret + ", mchId=" + mchId + ", partnerKey="
                 + partnerKey + ", certPath=" + certPath + ", domain=" + domain + "]";
+    }
+
+    public String description() {
+        StringBuilder sb = new StringBuilder("\nConfigs{");
+        sb.append("支付宝网关: ").append(appId).append("\n");
+
+        sb.append("}");
+        return sb.toString();
     }
 }

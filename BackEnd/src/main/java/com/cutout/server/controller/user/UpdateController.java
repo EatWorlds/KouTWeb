@@ -17,6 +17,7 @@ import com.cutout.server.utils.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -122,6 +123,9 @@ public class UpdateController {
         Map<String,String> result = new HashMap<>();
         try {
             logger.info("resendCheckEmail = " + email);
+            if (StringUtils.isEmpty(email)) {
+                throw new MessageException(messageCodeStorage.user_email_empty);
+            }
             UserInfoBean userInfoBean = userService.findUserByEmail(email);
             if (userInfoBean == null) {
                 throw new MessageException(messageCodeStorage.user_not_exists_error);

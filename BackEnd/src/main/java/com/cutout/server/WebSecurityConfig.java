@@ -16,6 +16,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsUtils;
 
 /**
  *
@@ -54,8 +55,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
 //        super.configure(http);
-        http.
-                authorizeRequests()
+//        https://blog.csdn.net/qq_35494808/article/details/82998135 解决跨域问题
+        http.cors().and().csrf().disable()
+                .authorizeRequests()
+                .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
                 .antMatchers("/**")
                 .permitAll()
                 .anyRequest()
@@ -66,8 +69,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginProcessingUrl("/v1/user/login") // 重定向login页面
                 .successHandler(ktWebAuthenticationSuccessHandler)// 登录成功返回
-                .failureHandler(ktWebAuthenticationFailHandler);// 登录失败返回
-        http.csrf().disable();
+                .failureHandler(ktWebAuthenticationFailHandler); // 登录失败返回
+//                .and()
+//                .cors();// 跨域问题 https://blog.csdn.net/w903328615/article/details/80503750
+//        http.csrf().disable();
     }
 
     /**

@@ -16,10 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -66,6 +63,7 @@ public class LoginController {
      * @param password
      * @return
      */
+    @CrossOrigin // 跨域问题
     @RequestMapping(value = "/user/login", method = RequestMethod.POST)
     @AuthIgnore
     public ResponseBean login(@RequestParam String username, @RequestParam String password) {
