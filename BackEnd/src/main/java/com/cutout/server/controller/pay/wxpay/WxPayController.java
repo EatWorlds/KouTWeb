@@ -88,6 +88,7 @@ public class WxPayController extends AbstractWxPayApiController {
     @GetMapping("/test")
     @ResponseBody
     public WxpayProperties test() {
+        log.info(wxpayProperties + "");
         return wxpayProperties;
     }
 

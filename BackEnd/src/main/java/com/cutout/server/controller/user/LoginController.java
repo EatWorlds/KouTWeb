@@ -137,11 +137,7 @@ public class LoginController {
             userInfoModel.checkUserEmail(email);
 
             // 验证用户信息是否存在
-            UserInfoBean userInfoBean = userService.findUserByEmail(email);
-            logger.info("logout userInfoBean ==" + userInfoBean);
-            if (userInfoBean == null) {
-                throw new MessageException(messageCodeStorage.user_not_exists_error);
-            }
+            UserInfoBean userInfoBean = userInfoModel.checkUserExists(email);
 
             // token不存在，则用户未登录
             String token = userInfoBean.getToken();

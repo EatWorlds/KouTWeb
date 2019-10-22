@@ -1,7 +1,10 @@
 package com.cutout.server.model;
 
+import com.cutout.server.configure.exception.MessageException;
+import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
+import com.cutout.server.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,12 @@ public class ProductInfoModel {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private MessageCodeStorage messageCodeStorage;
+
+    @Autowired
+    private ProductService productService;
 
     public ProductBean getProductInfo(int type) {
         Query query = Query.query(Criteria.where("type").is(type));
@@ -48,6 +57,30 @@ public class ProductInfoModel {
         productBean.setProductBeans(productDetailBeans);
 
         return mongoTemplate.save(productBean);
+    }
+
+    /**
+     * 验证产品有效性
+     *
+     * @param type 产品类型
+     * @param productDetailBean 产品详情
+     * @throws MessageException
+     */
+    public void checkProduct(Integer type,ProductDetailBean productDetailBean) throws MessageException {
+        // 暂时只支持人脸，所以只有0
+        if (type > 0) {
+            throw new MessageException(messageCodeStorage.user_order_type_not_exists);
+        }
+
+        ProductBean productBean = productService.getProductBean(type);
+        if (productBean == null) {
+            throw new MessageException(messageCodeStorage.product_info_empty);
+        }
+
+        List<ProductDetailBean> productDetailBeans = productBean.getProductBeans();
+        if (!productDetailBeans.contains(productDetailBean)) {
+            throw new MessageException(messageCodeStorage.user_order_detail_not_exists);
+        }
     }
 
 }

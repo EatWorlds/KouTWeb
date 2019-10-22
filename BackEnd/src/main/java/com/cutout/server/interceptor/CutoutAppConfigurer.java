@@ -26,13 +26,29 @@ public class CutoutAppConfigurer implements WebMvcConfigurer {
         return new LoginInterceptor();
     }
 
+    @Bean
+    public HandlerInterceptor getAliPayInterceptor(){
+        return new AliPayInterceptor();
+    }
+
+    @Bean
+    public HandlerInterceptor getWxPayInterceptor(){
+        return new WxPayInterceptor();
+    }
+
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
+
         InterceptorRegistration addInterceptor = registry.addInterceptor(getLoginInterceptor());
         addInterceptor.addPathPatterns("/**");
         // 通过判断是否有AuthIgnore来过滤是否需要token校验
-//        addInterceptor.excludePathPatterns("/v1/user/login")
-//                        .excludePathPatterns("/v1/user");
+        addInterceptor.excludePathPatterns("/v1/aliPay/**")
+                        .excludePathPatterns("/v1/wxPay/**");
+
+        registry.addInterceptor(getAliPayInterceptor()).addPathPatterns("/v1/aliPay/**");
+        registry.addInterceptor(getWxPayInterceptor()).addPathPatterns("/v1/wxPay/**");
+
     }
 }

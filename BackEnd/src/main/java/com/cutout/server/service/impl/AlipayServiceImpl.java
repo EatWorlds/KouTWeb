@@ -162,7 +162,7 @@ public class AlipayServiceImpl implements AlipayService {
         String body = new String(request.getParameter("body"));
         stringBuilder.append("body").append(body);
 
-        logger.info("stringBuilder = " + stringBuilder);
+        logger.info("stringBuilder = " + stringBuilder.toString());
         // TRADE_FINISHED(表示交易已经成功结束，并不能再对该交易做后续操作);
         // TRADE_SUCCESS(表示交易已经成功结束，可以对该交易做后续操作，如：分润、退款等);
         if (tradeStatus.equals("TRADE_FINISHED")) {
@@ -191,6 +191,16 @@ public class AlipayServiceImpl implements AlipayService {
         return false;
     }
 
+    /**
+     * 创建PC支付订单
+     *
+     * @param response
+     * @param email
+     * @param type
+     * @param productDetailBean
+     * @throws AlipayApiException
+     * @throws IOException
+     */
     @Override
     public void createPcPayOrder(HttpServletResponse response, String email, int type, ProductDetailBean productDetailBean) throws AlipayApiException, IOException {
 
@@ -209,12 +219,24 @@ public class AlipayServiceImpl implements AlipayService {
         model.setProductCode(productCode);
         model.setTotalAmount(amount);// 支付金额
         model.setSubject(productDetailBean.getTitle());
-        model.setBody(JSON.toJSONString(orderInfoBean));
+//        model.setBody(JSON.toJSONString(orderInfoBean));
 
+        AlipayTradePagePayRequest pagePayRequest = new AlipayTradePagePayRequest();
+        pagePayRequest.setReturnUrl(alipayProperties.getReturnUrl());// 回调地址
+        pagePayRequest.setNotifyUrl(alipayProperties.getNotifyUrl());// 支付宝异步通知地址
+        pagePayRequest.setBizModel(model);
+
+        // 这个过程会产生订单生成失败的情况
+//        String form = alipayClient.pageExecute(pagePayRequest).getBody();
+//
+//        response.setContentType("text/html;charset=" + alipayProperties.getCharset());
+//        response.getWriter().write(form);
+//        response.getWriter().flush();
+//        response.getWriter().close();
         // 会有 AlipayApiException, IOException 的错误
         AliPayApi.tradePage(response,model,alipayProperties.getNotifyUrl(),alipayProperties.getReturnUrl());
 
         // 记录订单到mongodb数据库
-        orderInfoBean = orderInfoModel.addOrderInfo(orderInfoBean);
+//        orderInfoBean = orderInfoModel.addOrderInfo(orderInfoBean);
     }
 }

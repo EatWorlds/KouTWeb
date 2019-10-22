@@ -121,4 +121,20 @@ public class MessageCodeStorage {
      */
     public static final String user_create_order_failed="user_create_order_failed|100021|创建订单失败";
 
+    /**
+     *messagecode :100022  messagevalue :充值帐户不存在
+     */
+    public static final String user_order_email_not_exists="user_order_email_not_exists|100022|充值帐户不存在";
+
+    /**
+     *messagecode :100023  messagevalue :产品功能不存在
+     */
+    public static final String user_order_type_not_exists="user_order_type_not_exists|100023|产品功能不存在";
+
+    /**
+     *messagecode :100024  messagevalue :暂无该订单选项
+     */
+    public static final String user_order_detail_not_exists="user_order_detail_not_exists|100024|暂无该订单选项";
+
+
 }

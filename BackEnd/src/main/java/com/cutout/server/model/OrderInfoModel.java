@@ -3,6 +3,7 @@ package com.cutout.server.model;
 import com.cutout.server.domain.bean.OrderInfoBean;
 import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
+import com.cutout.server.utils.Bases;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class OrderInfoModel {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @Autowired
+    private Bases bases;
 
     public OrderInfoBean getOrderInfo(String out_trade_no) {
         Query query = Query.query(Criteria.where("out_trade_no").is(out_trade_no));
@@ -61,6 +65,8 @@ public class OrderInfoModel {
         orderInfoBean.setType(type);
         // 设置订单的详情
         orderInfoBean.setProductDetailBean(productDetailBean);
+        // 设置创建时间
+        orderInfoBean.setCreate_time(bases.getSystemSeconds());
         return orderInfoBean;
     }
 

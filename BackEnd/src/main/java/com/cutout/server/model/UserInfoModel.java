@@ -6,6 +6,7 @@ import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
+import com.cutout.server.service.UserService;
 import com.cutout.server.service.VerifiedCodeService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.UUIDUtil;
@@ -36,6 +37,9 @@ public class UserInfoModel {
 
     @Autowired
     private VerifiedCodeService verifiedCodeService;
+
+    @Autowired
+    private UserService userService;
 
     /**
      * 校验邮箱，密码是否有效
@@ -106,6 +110,22 @@ public class UserInfoModel {
             throw new MessageException(messageCodeStorage.user_email_invalid);
         }
 
+    }
+
+    /**
+     * 判断用户是否存在
+     *
+     * @param email
+     * @throws MessageException
+     */
+    public UserInfoBean checkUserExists(String email) throws MessageException {
+        // 验证用户信息是否存在
+        UserInfoBean userInfoBean = userService.findUserByEmail(email);
+        if (userInfoBean == null) {
+            throw new MessageException(messageCodeStorage.user_not_exists_error);
+        }
+
+        return userInfoBean;
     }
 
     /**

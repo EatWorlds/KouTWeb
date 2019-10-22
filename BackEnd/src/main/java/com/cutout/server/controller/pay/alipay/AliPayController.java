@@ -1,18 +1,27 @@
 package com.cutout.server.controller.pay.alipay;
 
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.domain.*;
 import com.alipay.api.internal.util.AlipaySignature;
-import com.alipay.api.response.AlipayFundAuthOrderFreezeResponse;
-import com.alipay.api.response.AlipayFundCouponOrderAgreementPayResponse;
+import com.alipay.api.internal.util.StringUtils;
 import com.alipay.api.response.AlipayTradeCreateResponse;
+import com.cutout.server.configure.exception.MessageException;
+import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.configure.pay.AlipayProperties;
 import com.cutout.server.configure.pay.WxpayProperties;
+import com.cutout.server.constant.ConstantConfigure;
+import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
+import com.cutout.server.domain.bean.response.ResponseBean;
+import com.cutout.server.domain.bean.user.UserInfoBean;
+import com.cutout.server.model.ProductInfoModel;
+import com.cutout.server.model.UserInfoModel;
 import com.cutout.server.service.AlipayService;
+import com.cutout.server.service.AuthIgnore;
+import com.cutout.server.service.ProductService;
+import com.cutout.server.service.UserService;
+import com.cutout.server.utils.ResponseHelperUtil;
 import com.ijpay.alipay.AliPayApi;
 import com.ijpay.alipay.AliPayApiConfig;
 import com.ijpay.alipay.AliPayApiConfigKit;
@@ -29,8 +38,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,13 +59,28 @@ import java.util.Map;
 @RequestMapping("/v1/aliPay")
 @EnableConfigurationProperties(WxpayProperties.class)
 public class AliPayController extends AbstractAliPayApiController {
-    private static final Logger log = LoggerFactory.getLogger(AliPayController.class);
+    private static final Logger logger = LoggerFactory.getLogger(AliPayController.class);
 
     @Autowired
     private AlipayProperties alipayProperties;
 
     @Autowired
     private AlipayService alipayService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private ResponseHelperUtil responseHelperUtil;
+
+    @Autowired
+    private MessageCodeStorage messageCodeStorage;
+
+    @Autowired
+    private UserInfoModel userInfoModel;
+
+    @Autowired
+    private ProductInfoModel productInfoModel;
 
     @Override
     public AliPayApiConfig getApiConfig() {
@@ -73,13 +97,15 @@ public class AliPayController extends AbstractAliPayApiController {
                     .setSignType(alipayProperties.getSignType())
                     .build();
         }
+
+//        logger.info("AliPayApiConfig = " + JSON.toJSONString(aliPayApiConfig));
         return aliPayApiConfig;
     }
 
     @RequestMapping("")
     @ResponseBody
     public String index() {
-        return "欢迎使用 IJPay 中的支付宝支付 -By Javen  <br/><br>  交流群：723992875";
+        return "aliPay";
     }
 
     @RequestMapping("/test")
@@ -87,22 +113,47 @@ public class AliPayController extends AbstractAliPayApiController {
     public AliPayApiConfig test() {
         AliPayApiConfig aliPayApiConfig = AliPayApiConfigKit.getAliPayApiConfig();
         String charset = aliPayApiConfig.getCharset();
-        log.info("charset>" + charset);
+        logger.info("charset>" + charset);
         return aliPayApiConfig;
     }
 
     /**
-     * PC支付
+     *
+     * @param response
+     * @param email 给某个账号充值
+     * @param type  充值类型，默认为0：人脸，可以不传
+     * @param productDetailBean 订单详情
      */
-    @RequestMapping(value = "/pcPay")
+    @RequestMapping("/pcPay")
     @ResponseBody
-    public void pcPay(HttpServletResponse response, String email, int type, ProductDetailBean productDetailBean) {
+    @AuthIgnore
+    public ResponseBean pcPay(HttpServletResponse response, String email, @RequestParam(defaultValue = "0") Integer type, ProductDetailBean productDetailBean) {
+        logger.info("email = " + email + " type = " + type);
+        logger.info("productDetailBean = " + productDetailBean);
+        String message = messageCodeStorage.success_code;
+        Map<String,String> map = new HashMap<>();
         try {
+            map.put(ConstantConfigure.RESULT_EMAIL,email);
+
+            // 用户有效性校验
+            userInfoModel.checkUserEmail(email);
+
+           // 判断用户是否存在
+            userInfoModel.checkUserExists(email);
+
+            // 验证产品有效性
+            productInfoModel.checkProduct(type,productDetailBean);
+
+            // 下订单
             alipayService.createPcPayOrder(response,email,type,productDetailBean);
+        } catch (MessageException messageException) {
+            message = messageException.getMessage();
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("pcPay",e);
+            message = messageCodeStorage.user_create_order_failed;
         }
 
+        return responseHelperUtil.returnMessage(message,map);
     }
 
     /**
@@ -219,7 +270,7 @@ public class AliPayController extends AbstractAliPayApiController {
             // 获取支付宝GET过来反馈信息
             Map<String, String> map = AliPayApi.toMap(request);
             for (Map.Entry<String, String> entry : map.entrySet()) {
-                log.info(entry.getKey() + " = " + entry.getValue());
+                logger.info(entry.getKey() + " = " + entry.getValue());
             }
 
 //            boolean verifyResult = AlipaySignature.rsaCheckV1(map, aliPayBean.getPublicKey(), "UTF-8",
@@ -257,7 +308,7 @@ public class AliPayController extends AbstractAliPayApiController {
 
             // 获取支付宝POST过来反馈信息
             Map<String, String> params = AliPayApi.toMap(request);
-            log.info("notifyUrl = " + JSON.toJSONString(params));
+            logger.info("notifyUrl = " + JSON.toJSONString(params));
 //            for (Map.Entry<String, String> entry : params.entrySet()) {
 //                log.info(entry.getKey() + " = " + entry.getValue());
 //            }
@@ -267,11 +318,11 @@ public class AliPayController extends AbstractAliPayApiController {
             if (verifyResult) {
                 // TODO 请在这里加上商户的业务逻辑程序代码 异步通知可能出现订单重复通知 需要做去重处理
                 boolean notify = alipayService.checkNotify(request);
-                log.info("notify_url 验证成功succcess");
+                logger.info("notify_url 验证成功succcess");
                 // 修改订单更新时间，待完成
                 return "success";
             } else {
-                log.info("notify_url 验证失败");
+                logger.info("notify_url 验证失败");
                 // TODO
                 return "failure";
             }
