@@ -78,18 +78,25 @@
              <form>
                 <div class="form-group">
                   <label for="exampleInputEmail1">邮箱</label>
-                  <input type="email" class="form-control inputTextStyle" id="InputEmail1" placeholder="请输入邮箱">
+                  <input type="email" class="form-control inputTextStyle" id="InputEmail" placeholder="请输入邮箱">
                 </div>
                 <div class="form-group">
                   <label for="exampleInputPassword1">密码</label>
-                  <input type="password" class="form-control inputTextStyle" id="InputPassword1" placeholder="请输入6-30位密码">
+                  <input type="password" class="form-control inputTextStyle" id="InputPassword" placeholder="请输入6-30位密码">
+                </div>
+                 <div class="hintText" id="loginHintText" style="display: none">
+                  <p>请输入6-30位字母、数字的密码</p>
                 </div>
                 <div class="form-group">
-                  <button type="submit" class="btn btn-default btn_login">登录</button>
+                  <button 
+                  type="submit" 
+                  class="btn btn-default btn_login"
+                  @click="postLogin()"
+                  >登录</button>
                 </div>
                 <div class="forgetPassword">
                   <a href="#" data-toggle="modal" data-dismiss="modal" data-target="#forgetPassword">忘记密码</a>
-                  <a href="#" @click="setZinex" data-toggle="modal" data-dismiss="modal" data-target="#registeredModel">没有账号？去注册</a>
+                  <a href="#" data-toggle="modal" data-dismiss="modal" data-target="#registeredModel">没有账号？去注册</a>
                 </div>
             </form>
           </div>
@@ -108,7 +115,7 @@
              <form id="addForm">
                 <div class="form-group" enctype="multipart/form-data">
                   <label for="exampleInputEmail1">邮箱</label>
-                  <input type="email" class="form-control inputTextStyle" id="rInputEmail1" placeholder="请输入邮箱">
+                  <input type="email" class="form-control inputTextStyle" id="rInputEmail" placeholder="请输入邮箱">
                 </div>
                 <div class="form-group">
                   <input type="String " class="form-control inputNoCodeStyle" id="rInputCode" placeholder="请输入验证码">
@@ -117,13 +124,13 @@
                     style="margin-left:20px;" 
                     class="btn" 
                     type="button"
-                    @click="getCode()"
+                    @click="getCode('btnCode')"
                     >获取验证码</button>
                 </div>
                 <div class="form-group">
                   <input type="password" class="form-control inputNoTextStyle" id="rInputPassword" placeholder="请输入6-30位字母、数字的密码">
                 </div>
-                <div class="hintText" id="hintText" style="display: none">
+                <div class="hintText" id="registeredHintText" style="display: none">
                   <p>请输入6-30位字母、数字的密码</p>
                 </div>
                 <div class="form-group">
@@ -153,16 +160,16 @@
              <form id="addForm">
                 <div class="form-group" enctype="multipart/form-data">
                   <label for="exampleInputEmail1">邮箱</label>
-                  <input type="email" class="form-control inputTextStyle" id="rInputEmail1" placeholder="请输入邮箱">
+                  <input type="email" class="form-control inputTextStyle" id="zInputEmail" placeholder="请输入邮箱">
                 </div>
                 <div class="form-group">
-                  <input type="String " class="form-control inputNoCodeStyle" id="rInputCode" placeholder="请输入验证码">
+                  <input type="String " class="form-control inputNoCodeStyle" id="zInputCode" placeholder="请输入验证码">
                   <button 
-                    id="btnCode"
+                    id="forgetBtnCode"
                     style="margin-left:20px;" 
                     class="btn" 
                     type="button"
-                    @click="getCode()"
+                    @click="getCode('forgetBtnCode')"
                     >获取验证码</button>
                 </div>
                 <div class="form-group">
@@ -227,7 +234,7 @@
 </template>
 
 <script>
-
+import { apiAddress } from '@/request/api';
 export default {
   name: "HomeHeader",
   methods: {
@@ -246,17 +253,19 @@ export default {
     },
 
     // 获取邮箱验证码
-    getCode() {
+    getCode(id) {
       let number = 60;
+      // 获取验证码
+      this.getInputCode();
       var countdown = function(){
         if (number == 0) {
-          $('#btnCode').attr("disabled",false);
-          $('#btnCode').html("发送验证码");
+          $(`#${id}`).attr("disabled",false);
+          $(`#${id}`).html("发送验证码");
           number = 60;
           return;
         } else {
-          $('#btnCode').attr("disabled",true);
-          $('#btnCode').html(number + "秒 重新发送");
+          $(`#${id}`).attr("disabled",true);
+          $(`#${id}`).html(number + "秒 重新发送");
           number--;
         }
         setTimeout(countdown,1000);
@@ -264,47 +273,173 @@ export default {
 		  setTimeout(countdown,1000);
     },
 
-    // 注册/登录验证
-    verification(value) {
-      if(!(/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/.test())){
-        $('#hintText').show();
+    // 发送邮箱获取验证码
+    getInputCode(){
+      this.$api.registered.getEmailCode({
+        email: $('#rInputEmail').val()
+      }).then(res=>{
+        alert('请注意邮箱接收！')
+        return;
+      })
+    },
+
+    // 注册验证
+    verificationRegistered() {
+      if($('#rInputEmail').val().trim() === ""){
+        alert('邮箱不能为空！');
+        return -1;
+      }
+      if($('#rInputCode').val().trim() === ""){
+        alert('验证码不能为空！');
+        return -1;
+      }
+      if($('#rInputPassword').val().trim() === ""){
+        alert('密码不能为空！');
+        return -1;
+      }
+      if(!(/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/.test($('#rInputPassword').val()))){
+        $('#registeredHintText').show();
+        return -1;
       }else{
-        $('#hintText').hide();
+        $('#registeredHintText').hide();
+        return 1;
+      }
+    },
+
+    // 登录验证
+    verificationLogin(){ 
+       if($('#InputEmail').val().trim() === ""){
+        alert('邮箱不能为空！');
+        return -1;
+      }
+       if($('#InputPassword').val().trim() === ""){
+        alert('密码不能为空！');
+        return -1;
+      }
+      if(!(/^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/.test($('#InputPassword').val()))){
+        $('#loginHintText').show();
+        return -1;
+      }else{
+        $('#loginHintText').hide();
+        return 1;
       }
     },
 
     // 进行注册
     postRegistereted() {
       // 注册验证
-      this.verification($('#rInputPassword').val());
-      // axios.post('/user', {
-      //   email: $('#rInputEmail').val(), // 邮箱 
-      //   password:  $('#rInputPassword').val(), // 密码
-      //   code: $('#rInputCode').val()    // 验证码
-      // })
-      // .then(function (res) {
-      //   console.log(res)
-      // })
-      // .catch(function (error) {
-      //   console.log(error)
-      // })
+      let isStatus = this.verificationRegistered($('#rInputPassword').val());
+
+      if(isStatus === -1){
+        return; 
+      }else{
+        // 注册请求
+        this.$api.registered.postRegistered({
+          email: $('#rInputEmail').val(),        // 邮箱 
+          password:  $('#rInputPassword').val(), // 密码
+          code: $('#rInputCode').val()           // 验证码
+        }).then(res=>{
+          console.log(res)
+          if(res.data.status === 100000){
+            alert('注册成功！')
+            // 跳转登录界面
+
+
+          }else if(res.data.status === 100003){
+            alert('用户已存在，请进行登录！')
+
+          }else if(res.data.status === 1000013){
+            alert('验证码已失效，请重新获取！')
+
+          }else if(res.data.status === 100015){
+            alert('验证码不正确！')
+          
+          }else{
+            alert('登录失败！')
+          }
+        })
+      }
     },
 
     // 进行登录
     postLogin() {
       // 登录验证
-      this.verification($('#InputPassword').val());
+      let isStatus = this.verificationLogin();
+     
+      if(isStatus !== -1){
+        // 请求登录
+        this.$api.logins.login({
+          username: $('#InputEmail').val(),
+          password: $('#InputPassword').val()
+        }).then(res=>{
+          console.log(res)
+          if(res.data.status === 100002){
+            alert('用户信息不存在！');
+            return;
+          }else if(res.data.status === 100006){
+            alert('邮箱或者密码不正确!');
+            return;
+          }else if(res.data.status === 100000){
+            alert('登录成功！')
 
-      // axios.post('/user', {
-      //   email: $('#InputEmail').val(), // 邮箱 
-      //   password:  $('#InputPassword').val(), // 密码
-      // })
-      // .then(function (res) {
-      //   console.log(res)
-      // })
-      // .catch(function (error) {
-      //   console.log(error)
-      // })
+          }else{
+            alert('登录失败！')
+            return;
+          }
+        },err=>{
+          alert('请求出错！')
+        })
+      }else{
+        return;
+      }
+    },
+
+    // 下一步，验证验证码
+    verificationCode (){
+      // 验证输入框不能为空
+      if($('#zInputEmail').val().trim() == '' || $('#zInputCode').val().trim() == ''){
+        alert('邮箱或验证码不能为空！')
+        return;
+      }else{
+        this.$api.forgetPasswords.verifiedCode({
+          code: $('#zInputCode').val() 
+        }).then(res => {
+          // if(){
+
+          // }else if(){
+
+          // }else if(){
+
+          // }
+        },err=>{
+          alert('请求出错！')
+        })
+      }
+    },
+
+    // 更改新密码
+    updatePassword (){
+      // 新密码和确认密码不能为空
+      if($('updatePassword#').val().trim() == '' || $('#confirmPassword').val().trim() == ''){
+        aler('输入密码不能为空！')
+        return;
+      }
+
+      // 验证密码和确认密码的相同
+      if($('#updatePassword').val() !== $('#confirmPassword').val()){
+        alert('两次输入密码不一致！')
+        return;
+      }
+
+      // 请求改密
+      this.$api.forgetPasswords.forgetPassword({
+        email:$('#zInputEmail').val(),  
+        password:$('#updatePassword').val()
+      }).then(res=>{
+
+      },err =>{
+
+      })
     }
   }
 };
@@ -325,6 +460,7 @@ export default {
   .modal-content{
     left: 100px;
   }
+
 
   /* 单独样式 */
   .header_bg{

@@ -1,16 +1,22 @@
 'use strict'
 // Template version: 1.3.1
 // see http://vuejs-templates.github.io/webpack for documentation.
-
 const path = require('path')
 
 module.exports = {
   dev: {
-
-    // Paths
+    // http://61.160.212.32:49099
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
-    proxyTable: {},
+    proxyTable: {
+      // '/api':{     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
+      //   target:'http://test.eatsworlds.com:49099',   //这里写的是访问接口的域名和端口号
+      //   changeOrigin: true, // 必须加上这个才能跨域请求
+      //   pathRewrite: {
+      //     '^/api': '/'   //需要rewrite重写的,
+      //   }   
+      // }
+    },
 
     // Various Dev Server settings
     host: 'localhost', // can be overwritten by process.env.HOST

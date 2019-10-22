@@ -49,6 +49,13 @@ export default {
         background: #2263fe;
     }
 
+    
+    /* 解决内边距问题 */
+    .modal-open { 
+        overflow: inherit;
+        padding-right: 0px !important;
+    }
+
     /* 主要内容 */
     .content{
         position: relative;
