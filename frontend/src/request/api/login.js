@@ -14,8 +14,8 @@ const logins = {
     },
 
     // 退出登录
-    logout () {
-        
+    logout (params) {
+        return axios.post(`${base.koutu}/v1/user/logout`, qs.stringify(params))
     },
 
     // 找回密码

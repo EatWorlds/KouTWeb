@@ -50,20 +50,31 @@
         </div>
         <div class="header_login">
           <div class="btn_grounp">
-            <button 
+            <div v-if="!isShow">
+              <button 
+              id="btn-login"
               data-toggle="modal" 
               data-target="#loginModel" 
               class="btn btn-primary btn-login" 
               type="button" 
               @click="login">登录</button>
             <button 
+              id="btn-registered"
               data-toggle="modal" 
               data-target="registeredModel" 
               class="btn btn-primary btn-registered" 
               type="button"
               @click="registereted">注册</button>
+            </div>
+            <div v-if="isShow">
+               <button 
+                id="btn-logout"
+                class="btn btn-primary" 
+                type="button"
+                @click="logout">退出登录</button>
+            </div>
           </div>
-      </div>
+        </div>
       </div>
       <!-- end nav -->
     </div>
@@ -75,7 +86,7 @@
           <div class="model model_login_title">
            <h3>账号密码登录</h3>
           <div class="modal-body">
-             <form>
+             <form id="loginForm">
                 <div class="form-group">
                   <label for="exampleInputEmail1">邮箱</label>
                   <input type="email" class="form-control inputTextStyle" id="InputEmail" placeholder="请输入邮箱">
@@ -112,7 +123,7 @@
           <div class="model model_login_title">
            <h3>注册账号</h3>
           <div class="modal-body">
-             <form id="addForm">
+             <form id="registeredForm">
                 <div class="form-group" enctype="multipart/form-data">
                   <label for="exampleInputEmail1">邮箱</label>
                   <input type="email" class="form-control inputTextStyle" id="rInputEmail" placeholder="请输入邮箱">
@@ -157,7 +168,7 @@
           <div class="model model_login_title">
            <h3>忘记密码</h3>
           <div class="modal-body">
-             <form id="addForm">
+             <form id="forgetForm">
                 <div class="form-group" enctype="multipart/form-data">
                   <label for="exampleInputEmail1">邮箱</label>
                   <input type="email" class="form-control inputTextStyle" id="zInputEmail" placeholder="请输入邮箱">
@@ -201,7 +212,7 @@
           <div class="model model_login_title">
            <h3>修改密码</h3>
           <div class="modal-body">
-             <form id="addForm">
+             <form id="updateForm">
                 <div class="form-group">
                   <input type="password" class="form-control inputNoTextStyle" id="updatePassword" placeholder="请输入6-30位字母、数字的密码">
                 </div>
@@ -237,6 +248,19 @@
 import { apiAddress } from '@/request/api';
 export default {
   name: "HomeHeader",
+  data () {
+    return {
+      isShow: false,
+    }
+  },
+  mounted () {
+     // 刷新判断当前登录状态
+    if(localStorage.getItem('token').trim() == '' || localStorage.getItem('token') === 'undefined'){
+      this.isShow = false;
+    }else{
+      this.isShow = true;
+    }
+  },
   methods: {
     // 登录弹框
     login() {
@@ -343,10 +367,11 @@ export default {
           if(res.data.status === 100000){
             alert('注册成功！')
             // 跳转登录界面
-
+            $('#registeredModel').modal('hide')
+            $('#loginModal').modal('show')
 
           }else if(res.data.status === 100003){
-            alert('用户已存在，请进行登录！')
+            alert('注册用户已存在，请进行登录！')
 
           }else if(res.data.status === 1000013){
             alert('验证码已失效，请重新获取！')
@@ -381,7 +406,18 @@ export default {
             return;
           }else if(res.data.status === 100000){
             alert('登录成功！')
+            // 存储邮箱/token
+            // eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIyNjQ1Mjk5NDk2QHFxLmNvbSIsImV4cCI6MTU3MTgyNDA0NCwiZW1haWwiOiIyNjQ1Mjk5NDk2QHFxLmNvbSJ9.dthHhhrSdeQkiNF_SFHBv_eWDGjoI4i7LaXAv0KjPBc
+            localStorage.setItem('email',res.data.data.email)
+            localStorage.setItem('token',res.data.data.token)
 
+            // 改变登录状态
+            $('#loginModal').modal('hide')
+             this.isShow = true;
+            return;
+          }else if(res.data.status ===  100019){
+            alert('用户已登录!');
+            return;
           }else{
             alert('登录失败！')
             return;
@@ -439,6 +475,29 @@ export default {
 
       },err =>{
 
+      })
+    },
+
+    // 退出登录
+    logout () {
+      this.$api.logins.logout({
+        email: localStorage.getItem('email'),
+      }).then(res =>{
+        console.log(res)
+        if(res.data.status === 100000){
+          alert('退出成功！')
+          // 改变登录状态
+          this.isShow = false;
+          // 清空登录状态
+          localStorage.clear();
+
+        }else if(res.data.status === 100002){
+          alert('用户信息不存在！')
+        }else if(res.data.status === 100009){
+          alert('用户未登录！')
+        }
+      },err =>{
+        console.log('退出登录错误：' + err)
       })
     }
   }
