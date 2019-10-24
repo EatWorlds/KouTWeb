@@ -4,11 +4,14 @@ import com.alibaba.fastjson.JSON;
 import com.auth0.jwt.JWT;
 import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
+import com.cutout.server.domain.bean.product.ProductDetailBean;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.model.UserInfoModel;
 import com.cutout.server.service.AuthIgnore;
+import com.cutout.server.service.DownloadService;
 import com.cutout.server.service.ProductService;
+import com.cutout.server.service.UserService;
 import com.cutout.server.utils.JwtTokenUtil;
 import com.cutout.server.utils.ResponseHelperUtil;
 import org.slf4j.Logger;
@@ -54,6 +57,12 @@ public class TestController {
     @Autowired
     private UserInfoModel userInfoModel;
 
+    @Autowired
+    private DownloadService downloadService;
+
+    @Autowired
+    private UserService userService;
+
     /**
      * 获取产品描述信息，主要是价格列表等
      *
@@ -66,24 +75,19 @@ public class TestController {
         String message = messageCodeStorage.success_code;
 
         try {
-            UserInfoBean userInfoBean = new UserInfoBean();
-            userInfoBean.setEmail("98989@mail.com");
-            userInfoBean.setPassword("123456");
+            UserInfoBean userInfoBean = userService.findUserByEmail(info);
+            logger.info(JSON.toJSONString(userInfoBean));
+            logger.info(userInfoBean.getId());
 
-            String token = jwtTokenUtil.generateToken(userInfoBean);
-            logger.info("token ===== " + token);
-
-//            String userEmail = JWT.decode(token).getAudience().get(0);
-//            logger.info("userEmail = " + userEmail);
-//
-//
-//            Map<String,Object> test = jwtTokenUtil.verify(token,userInfoBean);
-//            Date time = (Date)test.get("time");
-//            logger.info("time === " + time);
-//            logger.info("is out = " + jwtTokenUtil.isTokenExpired(time));
-//            logger.info(JSON.toJSONString(test));
+            userInfoBean = userService.findUserById(userInfoBean.getId());
+            logger.info("after === " + JSON.toJSONString(userInfoBean));
+//            ProductDetailBean productDetailBean = new ProductDetailBean();
+//            productDetailBean.setCount(10);
+//            downloadService.initDownload(userInfoBean);
+//            downloadService.updateDownloadByPay(userInfoBean,productDetailBean);
+//            downloadService.updateDownloadByDown(userInfoBean);
         } catch (Exception e) {
-
+            logger.error("getTestInfo",e);
         }
 
         return responseHelperUtil.returnMessage(message);

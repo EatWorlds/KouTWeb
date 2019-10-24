@@ -10,6 +10,7 @@ import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.domain.bean.user.UserVerityCodeBean;
 import com.cutout.server.model.UserInfoModel;
 import com.cutout.server.service.AuthIgnore;
+import com.cutout.server.service.DownloadService;
 import com.cutout.server.service.MailService;
 import com.cutout.server.service.UserService;
 import com.cutout.server.utils.Bases;
@@ -52,7 +53,8 @@ public class RegisterController {
     @Autowired
     private MailService mailService;
 
-
+    @Autowired
+    private DownloadService downloadService;
 
     /**
      * 用户注册
@@ -142,6 +144,8 @@ public class RegisterController {
             // 还没验证过，则进行验证，否则直接返回成功
             if (0 == userInfoBean.getStatus()) {
                 userService.updateUserByCode(code);
+                // 初始化下载次数
+                downloadService.initDownload(userInfoBean);
             }
 
             result.put(ConstantConfigure.RESULT_EMAIL,userInfoBean.getEmail());

@@ -48,7 +48,8 @@ public class JwtTokenUtil {
 
             JWTCreator.Builder builder = JWT.create()
                     .withAudience(userInfoBean.getEmail()) // 返回该jwt由谁接收
-                    .withClaim("email",userInfoBean.getEmail()) // 自定义
+                    .withClaim(ConstantConfigure.RESULT_EMAIL,userInfoBean.getEmail()) // 自定义
+                    .withClaim(ConstantConfigure.RESUTL_ID,userInfoBean.getId())
                     .withExpiresAt(date); // 过期时间
             token = builder.sign(algorithm);
 

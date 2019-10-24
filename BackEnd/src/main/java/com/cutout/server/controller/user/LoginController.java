@@ -100,8 +100,9 @@ public class LoginController {
             // 创建token
             String token = jwtTokenUtil.generateToken(userInfoBean);
 
-            result.put("token",token);
-            result.put("email",username);
+            result.put(ConstantConfigure.USER_TOKEN_KEY,token);
+            result.put(ConstantConfigure.RESULT_EMAIL,username);
+            result.put(ConstantConfigure.RESUTL_ID,userInfoBean.getId());
 
             userService.updateUserWithLogin(username,token);
 //            Map<String,Object> result = jwtTokenUtil.verify(token,userInfoBean);

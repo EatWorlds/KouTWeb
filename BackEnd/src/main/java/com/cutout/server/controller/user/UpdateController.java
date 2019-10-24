@@ -55,16 +55,19 @@ public class UpdateController {
     /**
      * 更新用户信息
      *
-     * @param id
+     * @param
      * @param userInfoBean
      * @return
      */
     @RequestMapping(value = "/user/{id}", method = RequestMethod.PATCH)
-    public ResponseBean update(@PathVariable("id") String id, UserInfoBean userInfoBean) {
+    @AuthIgnore
+    public ResponseBean update(@PathVariable("id") String id, @RequestParam(defaultValue = "") String oriEmail, UserInfoBean userInfoBean) {
         String message = messageCodeStorage.success_code;
         try {
             logger.info("update id = " + id);
-            logger.info("update email = " + JSON.toJSON(userInfoBean));
+            logger.info("update oriEmail = " + oriEmail);
+            logger.info("update userInfoBean = " + userInfoBean);
+
         } catch (Exception e) {
 
         }
@@ -146,8 +149,10 @@ public class UpdateController {
 
             result.put(ConstantConfigure.RESULT_EMAIL,userInfoBean.getEmail());
         } catch (MessageException messageException) {
+            logger.error("resendCheckEmail",messageException.getMessage());
             message = messageException.getMessage();
         } catch (Exception e) {
+            logger.error("resendCheckEmail exception",e.getMessage());
             message = e.getMessage();
         }
 

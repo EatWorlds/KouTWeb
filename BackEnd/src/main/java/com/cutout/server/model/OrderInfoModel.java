@@ -4,12 +4,14 @@ import com.cutout.server.domain.bean.OrderInfoBean;
 import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
 import com.cutout.server.utils.Bases;
+import com.mongodb.client.result.UpdateResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ public class OrderInfoModel {
     @Autowired
     private Bases bases;
 
-    public OrderInfoBean getOrderInfo(String out_trade_no) {
+    public OrderInfoBean findOrderByNo(String out_trade_no) {
         Query query = Query.query(Criteria.where("out_trade_no").is(out_trade_no));
         return mongoTemplate.findOne(query, OrderInfoBean.class);
     }
@@ -41,7 +43,7 @@ public class OrderInfoModel {
     }
 
     /**
-     * 创建记录到数据库的订单类，微信支付宝公用
+     * 创建记录到数据库的订单类，微信支付宝
      * @param outTradeNo
      * @param email
      * @param amount
@@ -68,6 +70,21 @@ public class OrderInfoModel {
         // 设置创建时间
         orderInfoBean.setCreate_time(bases.getSystemSeconds());
         return orderInfoBean;
+    }
+
+    /**
+     * 通过商户号更新订单更新时间，即已经完成支付的时间
+     * @param out_trade_no
+     * @return
+     */
+    public UpdateResult updateOrderTimeByNo(String out_trade_no) {
+        Query query = Query.query(Criteria.where("out_trade_no").is(out_trade_no));
+        Update update = new Update();
+        update.set("out_trade_no",bases.getSystemSeconds());
+//        update.set("code","");
+        UpdateResult updateResult = mongoTemplate.updateFirst(query,update,OrderInfoBean.class);
+
+        return updateResult;
     }
 
 }

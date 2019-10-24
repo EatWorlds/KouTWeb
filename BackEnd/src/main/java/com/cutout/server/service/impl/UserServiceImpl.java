@@ -67,4 +67,9 @@ public class UserServiceImpl implements UserService {
         userMongoModel.updateUserCodeByEmail(userInfoBean);
         return userInfoBean;
     }
+
+    @Override
+    public UserInfoBean findUserById(String id) {
+        return userMongoModel.findUserById(id);
+    }
 }

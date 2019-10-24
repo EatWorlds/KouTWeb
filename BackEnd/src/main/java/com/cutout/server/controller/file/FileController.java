@@ -5,6 +5,10 @@ import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
 import com.cutout.server.domain.bean.response.ResponseBean;
+import com.cutout.server.domain.bean.user.UserDownloadBean;
+import com.cutout.server.domain.bean.user.UserInfoBean;
+import com.cutout.server.service.DownloadService;
+import com.cutout.server.service.UserService;
 import com.cutout.server.utils.Bases;
 import com.cutout.server.utils.FileBase;
 import com.cutout.server.utils.ResponseHelperUtil;
@@ -49,10 +53,16 @@ public class FileController {
     @Autowired
     private Bases bases;
 
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private DownloadService downloadService;
+
     @RequestMapping(value = "/file", method = RequestMethod.POST)
     public ResponseBean fileUpload(@RequestParam("file") MultipartFile files, HttpServletRequest request) {
         String message = messageCodeStorage.success_code;
-        Map<String,String> paths = null;
+        Map<String,String> paths = new HashMap<>();
         try {
             Map<String,Object> attribute = (Map<String, Object>) request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
             if (attribute == null) {
@@ -64,8 +74,6 @@ public class FileController {
             }
 
             String email = (String)attribute.get("email");
-
-            paths = new HashMap<>();
             String fileName = files.getOriginalFilename();
 
             // 按日期新建文件夹
@@ -85,8 +93,10 @@ public class FileController {
             message = messageException.getMessage();
         } catch (IOException ioException) {
             logger.error("IOException",ioException);
+            message = messageCodeStorage.user_upload_img_failed;
         } catch (Exception e) {
             logger.error("Exception",e);
+            message = messageCodeStorage.user_upload_img_failed;
         }
 
         return responseHelperUtil.returnMessage(message,paths);
@@ -106,6 +116,48 @@ public class FileController {
             }
             file.createNewFile();
         }
+    }
+
+    /**
+     * 图片下载次数更新
+     *
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/file", method = RequestMethod.PATCH)
+    public ResponseBean fileDownload(HttpServletRequest request) {
+        String message = messageCodeStorage.success_code;
+        Map<String,String> paths = new HashMap<>();
+        try {
+            Map<String,Object> attribute = (Map<String, Object>) request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
+            if (attribute == null) {
+                logger.error("FileController fileDownload attribute is null");
+                throw new MessageException(messageCodeStorage.user_download_img_failed);
+            }
+
+            String email = (String)attribute.get("email");
+            paths.put(ConstantConfigure.RESULT_EMAIL,email);
+            UserInfoBean userInfoBean = userService.findUserByEmail(email);
+            UserDownloadBean userDownloadBean = userInfoBean.getUserDownload();
+            if (userDownloadBean == null) {
+                logger.error("FileController userDownloadBean is null");
+                throw new MessageException(messageCodeStorage.user_download_img_failed);
+            }
+
+            if (userDownloadBean.getValid_count() <= 0) {
+                throw new MessageException(messageCodeStorage.user_download_img_count_invalid);
+            }
+
+            userInfoBean = downloadService.updateDownloadByDown(userInfoBean);
+            paths.put("validCount",Integer.toString(userInfoBean.getUserDownload().getValid_count()));
+        } catch (MessageException messageException) {
+            message = messageException.getMessage();
+        } catch (Exception e) {
+            logger.error("FileController fileDownload",e);
+            message = messageCodeStorage.user_download_img_failed;
+        }
+
+        return responseHelperUtil.returnMessage(message,paths);
     }
 
 }

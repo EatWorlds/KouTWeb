@@ -7,7 +7,9 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Random;
 
 @Component
@@ -131,8 +133,64 @@ public class Bases {
         return random.nextInt(max - min + 1) + min;
     }
 
+    /**
+     * 判断是否是正确的邮箱格式
+     * @param content
+     * @return
+     */
     public boolean isEmail(String content) {
         boolean isMatch = ReUtil.isMatch("\\w+@\\w+\\.[a-z]+(\\.[a-z]+)?",content);
         return isMatch;
+    }
+
+    /**
+     *
+     * @Title: getMonthTime
+     * @Description: 获取当月某天某时的时间
+     * @param day
+     * @param hour
+     * @param min
+     * @param second
+     * @return
+     * @return: int
+     * @throws
+     */
+    public int getCurrentMonthTime(int day,int hour, int min, int second) {
+        Calendar cal = new GregorianCalendar();
+        cal.set(Calendar.DAY_OF_MONTH, day);// 设置为1号,当前日期即为本月第一天
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, min);
+        cal.set(Calendar.SECOND, second);
+        return (int) (cal.getTimeInMillis() / 1000);
+    }
+
+    /**
+     *
+     * @Title: getMonthTime
+     * @Description: 获取某月某天某时的时间,day传0，即为最后一天
+     * @param month
+     * @param day
+     * @param hour
+     * @param min
+     * @param second
+     * @return int
+     * @throws
+     */
+    public int getMonthTime(int month,int day,int hour,int min,int second) {
+        Calendar cal = new GregorianCalendar();
+        cal.add(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day == 0 ? cal.getActualMaximum(Calendar.DAY_OF_MONTH) : day);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, min);
+        cal.set(Calendar.SECOND, second);
+        return (int) (cal.getTimeInMillis() / 1000);
+    }
+
+    /**
+     * 获取本月最后一天 23:59:59的时间
+     * @return
+     */
+    public int getMonthLastTime() {
+        return getMonthTime(0,0,23,59,59);
     }
 }

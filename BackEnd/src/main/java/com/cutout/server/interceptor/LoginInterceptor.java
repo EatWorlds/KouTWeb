@@ -51,6 +51,10 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private ResponseMsgUtil responseMsgUtil;
 
+    private static final String HEADER_STRING = "Authorization";
+
+    private static final String TOKEN_PREFIX = "Bearer";
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 
@@ -67,7 +71,15 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         String token = request.getHeader(ConstantConfigure.USER_TOKEN_KEY);
+
+        String authorization = request.getHeader(HEADER_STRING);
+        String tokenNew = authorization.replace(TOKEN_PREFIX,"");
+
+//        String token1 = request.getHeader()
         logger.info("LoginInterceptor preHandle token = " + token);
+        logger.info("LoginInterceptor preHandle authorization = " + tokenNew);
+        token = tokenNew.trim();
+        logger.info("LoginInterceptor preHandle authorization = " + tokenNew.trim());
         if (StringUtils.isEmpty(token)) {
             responseMsgUtil.out(response,messageCodeStorage.user_token_invalid);
             return false;

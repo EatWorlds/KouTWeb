@@ -59,4 +59,11 @@ public interface UserService
      * @return
      */
     UserInfoBean updateUserCodeByEmail(UserInfoBean userInfoBean);
+
+    /**
+     * 根据id获取用户信息
+     * @param id
+     * @return
+     */
+    UserInfoBean findUserById(String id);
 }

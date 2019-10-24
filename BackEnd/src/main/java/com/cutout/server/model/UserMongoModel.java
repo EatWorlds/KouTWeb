@@ -132,5 +132,15 @@ public class UserMongoModel {
         return updateResult;
     }
 
+    /**
+     * 根据id获取用户信息
+     * @param id
+     * @return
+     */
+    public UserInfoBean findUserById(String id) {
+        Query query = Query.query(Criteria.where("_id").is(id));
+        return mongoTemplate.findOne(query,UserInfoBean.class);
+    }
+
 
 }

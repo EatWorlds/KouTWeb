@@ -11,16 +11,14 @@ import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.configure.pay.AlipayProperties;
 import com.cutout.server.configure.pay.WxpayProperties;
 import com.cutout.server.constant.ConstantConfigure;
+import com.cutout.server.domain.bean.OrderInfoBean;
 import com.cutout.server.domain.bean.product.ProductBean;
 import com.cutout.server.domain.bean.product.ProductDetailBean;
 import com.cutout.server.domain.bean.response.ResponseBean;
 import com.cutout.server.domain.bean.user.UserInfoBean;
 import com.cutout.server.model.ProductInfoModel;
 import com.cutout.server.model.UserInfoModel;
-import com.cutout.server.service.AlipayService;
-import com.cutout.server.service.AuthIgnore;
-import com.cutout.server.service.ProductService;
-import com.cutout.server.service.UserService;
+import com.cutout.server.service.*;
 import com.cutout.server.utils.ResponseHelperUtil;
 import com.ijpay.alipay.AliPayApi;
 import com.ijpay.alipay.AliPayApiConfig;
@@ -68,7 +66,7 @@ public class AliPayController extends AbstractAliPayApiController {
     private AlipayService alipayService;
 
     @Autowired
-    private UserService userService;
+    private PayCommonService payCommonService;
 
     @Autowired
     private ResponseHelperUtil responseHelperUtil;
@@ -98,7 +96,6 @@ public class AliPayController extends AbstractAliPayApiController {
                     .build();
         }
 
-//        logger.info("AliPayApiConfig = " + JSON.toJSONString(aliPayApiConfig));
         return aliPayApiConfig;
     }
 
@@ -319,7 +316,12 @@ public class AliPayController extends AbstractAliPayApiController {
                 // TODO 请在这里加上商户的业务逻辑程序代码 异步通知可能出现订单重复通知 需要做去重处理
                 boolean notify = alipayService.checkNotify(request);
                 logger.info("notify_url 验证成功succcess");
-                // 修改订单更新时间，待完成
+                // 修改订单更新时间,多次请求,保证只更新一次update_time到数据库
+                String out_trade_no = new String(request.getParameter("out_trade_no"));
+                OrderInfoBean orderInfoBean = payCommonService.findOrderByNo(out_trade_no);
+                if (orderInfoBean.getUpdate_time() <= 0) {
+                    orderInfoBean = payCommonService.updateOrderTimeByNo(out_trade_no);
+                }
                 return "success";
             } else {
                 logger.info("notify_url 验证失败");

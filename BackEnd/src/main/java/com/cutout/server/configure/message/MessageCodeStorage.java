@@ -136,5 +136,15 @@ public class MessageCodeStorage {
      */
     public static final String user_order_detail_not_exists="user_order_detail_not_exists|100024|暂无该订单选项";
 
+    /**
+     *messagecode :100025  messagevalue :图片下载失败
+     */
+    public static final String user_download_img_failed ="user_download_img_failed|100025|图片下载失败";
+
+    /**
+     *messagecode :100026  messagevalue :图片下载次数已用完
+     */
+    public static final String user_download_img_count_invalid ="user_download_img_count_invalid|100026|图片下载次数已用完";
+
 
 }

@@ -10,4 +10,6 @@ public interface PayCommonService {
     OrderInfoBean addOrder(OrderInfoBean orderInfoBean);
 
     OrderInfoBean findOrderByNo(String out_trade_no);
+
+    OrderInfoBean updateOrderTimeByNo(String out_trade_no);
 }

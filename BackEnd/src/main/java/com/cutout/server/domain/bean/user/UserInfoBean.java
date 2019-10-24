@@ -71,7 +71,7 @@ public class UserInfoBean implements UserDetails {
     /**
      * 下载有效性，剩余有效次数、时间等
      */
-    private List<UserDownloadBean> userDownloads;
+    private UserDownloadBean userDownload;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
