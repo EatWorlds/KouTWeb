@@ -7,6 +7,13 @@ import org.springframework.util.unit.DataSize;
 
 import javax.servlet.MultipartConfigElement;
 
+/**
+ * @ClassName FileSizeConfigure
+ * @Description: 配置文件上传的限制
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Configuration
 public class FileSizeConfigure {
 

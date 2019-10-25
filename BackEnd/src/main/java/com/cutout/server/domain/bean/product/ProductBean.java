@@ -4,6 +4,13 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * @ClassName ProductBean
+ * @Description: 产品大类
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Data
 public class ProductBean {
 

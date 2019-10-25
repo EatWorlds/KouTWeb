@@ -2,6 +2,13 @@ package com.cutout.server.domain.bean.product;
 
 import lombok.Data;
 
+/**
+ * @ClassName ProductDetailBean
+ * @Description: 产品明细
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Data
 public class ProductDetailBean {
 

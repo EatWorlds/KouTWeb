@@ -3,9 +3,12 @@ package com.cutout.server.configure.exception;
 import lombok.Data;
 
 /**
- * 2019-09-20
- */
-
+ * @ClassName MessageException
+ * @Description: 自定义错误类
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 public class MessageException extends Exception {
 
     private static final long serialVersionUID = 6917398533139941801L;

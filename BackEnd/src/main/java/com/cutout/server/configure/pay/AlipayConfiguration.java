@@ -6,7 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
+/**
+ * @ClassName AlipayConfiguration
+ * @Description: 支付宝支付配置
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Configuration
 @EnableConfigurationProperties(AlipayProperties.class)
 public class AlipayConfiguration {

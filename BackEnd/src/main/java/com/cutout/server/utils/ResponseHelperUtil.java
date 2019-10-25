@@ -19,8 +19,10 @@ public class ResponseHelperUtil {
 
     public ResponseBean returnMessage(String errorInfo, String errorData) {
         ResponseBean responseBean = getResponseBean(errorInfo);
-        if (!StringUtils.isEmpty(errorData))
+        if (!StringUtils.isEmpty(errorData)) {
             responseBean.setData(errorData);
+        }
+
         return responseBean;
     }
 

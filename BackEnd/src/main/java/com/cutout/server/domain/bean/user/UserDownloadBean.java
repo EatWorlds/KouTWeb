@@ -2,6 +2,13 @@ package com.cutout.server.domain.bean.user;
 
 import lombok.Data;
 
+/**
+ * @ClassName UserDownloadBean
+ * @Description: 用户图片下载信息
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Data
 public class UserDownloadBean {
 

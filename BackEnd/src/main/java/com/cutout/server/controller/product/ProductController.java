@@ -13,18 +13,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * @author dimple
- *
- * 获取产品描述等相关信息
- */
+ * @ClassName ProductController
+ * @Description: 对产品的相关操作
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @RestController
 @RequestMapping("/v1")
 public class ProductController {
 
     private Logger logger = LoggerFactory.getLogger(ProductController.class);
-
-    @Autowired
-    private MessageCodeStorage messageCodeStorage;
 
     @Autowired
     private ResponseHelperUtil responseHelperUtil;
@@ -41,13 +40,13 @@ public class ProductController {
     @RequestMapping(value = "/product", method = RequestMethod.GET)
     @AuthIgnore
     public ResponseBean getProductInfo(@RequestParam int type) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         ProductBean productBean = null;
         try {
             logger.info("getProductInfo = " + type);
             productBean = productService.getProductBean(type);
             if (productBean == null) {
-                throw new MessageException(messageCodeStorage.product_info_empty);
+                throw new MessageException(MessageCodeStorage.product_info_empty);
             }
 
 
@@ -66,13 +65,13 @@ public class ProductController {
      */
     @RequestMapping(value = "/product", method = RequestMethod.POST)
     public ResponseBean insertProductInfo() {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         ProductBean productBean = null;
         try {
 
            productBean =  productService.addProductBean(0);
             if (productBean == null) {
-                throw new MessageException(messageCodeStorage.product_info_empty);
+                throw new MessageException(MessageCodeStorage.product_info_empty);
             }
         } catch (MessageException messageException) {
             message = messageException.getMessage();

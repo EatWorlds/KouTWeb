@@ -67,9 +67,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().permitAll()
                 .and()
                 .formLogin()
-                .loginProcessingUrl("/v1/user/login") // 重定向login页面
-                .successHandler(ktWebAuthenticationSuccessHandler)// 登录成功返回
-                .failureHandler(ktWebAuthenticationFailHandler); // 登录失败返回
+                // 重定向login页面
+                .loginProcessingUrl("/v1/user/login")
+                // 登录成功返回
+                .successHandler(ktWebAuthenticationSuccessHandler)
+                // 登录失败返回
+                .failureHandler(ktWebAuthenticationFailHandler);
 //                .and()
 //                .cors();// 跨域问题 https://blog.csdn.net/w903328615/article/details/80503750
 //        http.csrf().disable();
@@ -92,9 +95,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         auth.authenticationProvider(providerCustom);
     }
 
-    //    @Override
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        logger.info("configure auth ==================");
-//        auth.userDetailsService(userInfoDetailService).passwordEncoder(bcryptPasswordEncoder());
-//    }
 }

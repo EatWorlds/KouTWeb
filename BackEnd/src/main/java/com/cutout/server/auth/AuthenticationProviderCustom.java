@@ -26,6 +26,13 @@ import org.springframework.util.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @ClassName AuthenticationProviderCustom
+ * @Description:
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Component
 public class AuthenticationProviderCustom implements AuthenticationProvider {
 
@@ -41,9 +48,6 @@ public class AuthenticationProviderCustom implements AuthenticationProvider {
     private UserInfoDetailService userInfoDetailService;
 
     @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -55,7 +59,7 @@ public class AuthenticationProviderCustom implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         String username = authentication.getName();
         try {
@@ -71,17 +75,17 @@ public class AuthenticationProviderCustom implements AuthenticationProvider {
             UserInfoBean userInfoBean = (UserInfoBean)userInfoDetailService.loadUserByUsername(username);
             logger.info("authenticate = " + JSON.toJSONString(userInfoBean));
             if (userInfoBean == null) {
-                throw new MessageException(messageCodeStorage.user_not_exists_error);
+                throw new MessageException(MessageCodeStorage.user_not_exists_error);
             }
 
-            // token已存在，则表示用户已经登录
+            // token已存在，则表示用户已经登录,如果后面的还登录，则清空token重新来
             if (!StringUtils.isEmpty(userInfoBean.getToken())) {
                 // 如果来登录的用户距离上一次超过固定的时间，则给他重新登录的机会，否则返回已经登录
-                if (bases.getSystemSeconds() - userInfoBean.getLast_login() > ConstantConfigure.TOKEN_INVALID_TIME) {
+//                if (bases.getSystemSeconds() - userInfoBean.getLast_login() > ConstantConfigure.TOKEN_INVALID_TIME) {
                     userService.cleanUserToken(userInfoBean.getToken());
-                } else {
-                    throw new MessageException(messageCodeStorage.user_already_login_error);
-                }
+//                } else {
+//                    throw new MessageException(MessageCodeStorage.user_already_login_error);
+//                }
             }
 
             boolean isRight = userInfoModel.isPasswordRight(password,userInfoBean.getPassword());
@@ -89,7 +93,7 @@ public class AuthenticationProviderCustom implements AuthenticationProvider {
 
             // 验证密码是否正确
             if (!isRight) {
-                throw new MessageException(messageCodeStorage.user_login_email_password_error);
+                throw new MessageException(MessageCodeStorage.user_login_email_password_error);
             }
 
             // 创建token

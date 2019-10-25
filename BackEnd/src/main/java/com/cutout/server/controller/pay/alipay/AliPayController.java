@@ -72,9 +72,6 @@ public class AliPayController extends AbstractAliPayApiController {
     private ResponseHelperUtil responseHelperUtil;
 
     @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private UserInfoModel userInfoModel;
 
     @Autowired
@@ -127,7 +124,7 @@ public class AliPayController extends AbstractAliPayApiController {
     public ResponseBean pcPay(HttpServletResponse response, String email, @RequestParam(defaultValue = "0") Integer type, ProductDetailBean productDetailBean) {
         logger.info("email = " + email + " type = " + type);
         logger.info("productDetailBean = " + productDetailBean);
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> map = new HashMap<>();
         try {
             map.put(ConstantConfigure.RESULT_EMAIL,email);
@@ -147,7 +144,7 @@ public class AliPayController extends AbstractAliPayApiController {
             message = messageException.getMessage();
         } catch (Exception e) {
             logger.error("pcPay",e);
-            message = messageCodeStorage.user_create_order_failed;
+            message = MessageCodeStorage.user_create_order_failed;
         }
 
         return responseHelperUtil.returnMessage(message,map);

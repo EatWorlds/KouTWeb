@@ -30,9 +30,6 @@ public class UserInfoModel {
     private Logger logger = LoggerFactory.getLogger(UserInfoModel.class);
 
     @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private Bases bases;
 
     @Autowired
@@ -52,13 +49,13 @@ public class UserInfoModel {
 
         // 验证邮箱和密码是否为空
         if (StringUtils.isEmpty(email) || StringUtils.isEmpty(password)) {
-            throw new MessageException(messageCodeStorage.user_email_password_empty);
+            throw new MessageException(MessageCodeStorage.user_email_password_empty);
         }
 
         // 判断邮箱格式是否正确
         boolean isEmail = bases.isEmail(email);
         if (!isEmail) {
-            throw new MessageException(messageCodeStorage.user_email_invalid);
+            throw new MessageException(MessageCodeStorage.user_email_invalid);
         }
 
     }
@@ -71,23 +68,23 @@ public class UserInfoModel {
     public void checkVerityCode(String email,int code) throws MessageException {
 
         if (StringUtils.isEmpty(code)) {
-            throw new MessageException(messageCodeStorage.user_verity_code_empty);
+            throw new MessageException(MessageCodeStorage.user_verity_code_empty);
         }
 
         UserVerityCodeBean userVerityCodeBean = verifiedCodeService.findVerityCodeByEmail(email);
         logger.info("UserInfoModel checkVerityCode userVerityCodeBean = " + JSON.toJSONString(userVerityCodeBean));
         // 没有信息，也给验证码无效的提示
         if (userVerityCodeBean == null) {
-            throw new MessageException(messageCodeStorage.user_verity_code_invalid);
+            throw new MessageException(MessageCodeStorage.user_verity_code_invalid);
         }
 
         // 验证码超过5分钟，给过期提示
         if (bases.getSystemSeconds() - userVerityCodeBean.getUpdate_time() > ConstantConfigure.FIVE_MINUTES_TIMES) {
-            throw new MessageException(messageCodeStorage.user_verity_code_out_time);
+            throw new MessageException(MessageCodeStorage.user_verity_code_out_time);
         }
 
         if (code != userVerityCodeBean.getVerity_code()) {
-            throw new MessageException(messageCodeStorage.user_verity_code_error);
+            throw new MessageException(MessageCodeStorage.user_verity_code_error);
         }
     }
 
@@ -101,13 +98,13 @@ public class UserInfoModel {
 
         // 验证邮箱是否为空
         if (StringUtils.isEmpty(email)) {
-            throw new MessageException(messageCodeStorage.user_email_empty);
+            throw new MessageException(MessageCodeStorage.user_email_empty);
         }
 
         // 判断邮箱格式是否正确
         boolean isEmail = bases.isEmail(email);
         if (!isEmail) {
-            throw new MessageException(messageCodeStorage.user_email_invalid);
+            throw new MessageException(MessageCodeStorage.user_email_invalid);
         }
 
     }
@@ -122,7 +119,7 @@ public class UserInfoModel {
         // 验证用户信息是否存在
         UserInfoBean userInfoBean = userService.findUserByEmail(email);
         if (userInfoBean == null) {
-            throw new MessageException(messageCodeStorage.user_not_exists_error);
+            throw new MessageException(MessageCodeStorage.user_not_exists_error);
         }
 
         return userInfoBean;

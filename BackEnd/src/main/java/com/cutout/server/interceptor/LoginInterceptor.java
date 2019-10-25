@@ -34,12 +34,6 @@ public class LoginInterceptor implements HandlerInterceptor {
     private Logger logger = LoggerFactory.getLogger(LoginInterceptor.class);
 
     @Autowired
-    private ResponseHelperUtil responseHelperUtil;
-
-    @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
     @Autowired
@@ -81,7 +75,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         token = tokenNew.trim();
         logger.info("LoginInterceptor preHandle authorization = " + tokenNew.trim());
         if (StringUtils.isEmpty(token)) {
-            responseMsgUtil.out(response,messageCodeStorage.user_token_invalid);
+            responseMsgUtil.out(response,MessageCodeStorage.user_token_invalid);
             return false;
         }
 
@@ -92,18 +86,18 @@ public class LoginInterceptor implements HandlerInterceptor {
         UserInfoBean userInfoBean = userService.findUserByEmail(userEmail);
         logger.info("LoginInterceptor userInfoBean = " + JSON.toJSONString(userInfoBean));
         if (userInfoBean == null) {
-            responseMsgUtil.out(response,messageCodeStorage.user_not_exists_error);
+            responseMsgUtil.out(response,MessageCodeStorage.user_not_exists_error);
             return false;
         }
 
         if (StringUtils.isEmpty(userInfoBean.getToken())) {
-            responseMsgUtil.out(response,messageCodeStorage.user_not_login_error);
+            responseMsgUtil.out(response,MessageCodeStorage.user_not_login_error);
             return false;
         }
 
         // 如果传递的token和数据库的token对不上，说明已经重新登录过了
         if (!userInfoBean.getToken().equals(token)) {
-            responseMsgUtil.out(response,messageCodeStorage.user_token_invalid);
+            responseMsgUtil.out(response,MessageCodeStorage.user_token_invalid);
             return false;
         }
 
@@ -111,7 +105,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         if (bases.getSystemSeconds() - userInfoBean.getLast_login() > ConstantConfigure.TOKEN_INVALID_TIME) {
             // 需要删除token
             userService.cleanUserToken(token);
-            responseMsgUtil.out(response,messageCodeStorage.user_token_out_of_time);
+            responseMsgUtil.out(response,MessageCodeStorage.user_token_out_of_time);
             return false;
         }
 

@@ -10,6 +10,13 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * @ClassName AlipayProperties
+ * @Description: 获取配置文件中的pay.alipay的消息
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Data
 @Slf4j
 @ConfigurationProperties(prefix = "pay.alipay")

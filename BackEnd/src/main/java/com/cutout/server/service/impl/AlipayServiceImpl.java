@@ -63,13 +63,16 @@ public class AlipayServiceImpl implements AlipayService {
         model.setOutTradeNo(outTradeNo);
         model.setSubject(productDetailBean.getTitle());
 
-        model.setTotalAmount(amount);// 支付金额
+        // 支付金额
+        model.setTotalAmount(amount);
         model.setBody(JSON.toJSONString(orderInfoBean));
         model.setProductCode(productCode);
 
         AlipayTradePagePayRequest pagePayRequest = new AlipayTradePagePayRequest();
-        pagePayRequest.setReturnUrl(alipayProperties.getReturnUrl());// 回调地址
-        pagePayRequest.setNotifyUrl(alipayProperties.getNotifyUrl());// 支付宝异步通知地址
+        // 回调地址
+        pagePayRequest.setReturnUrl(alipayProperties.getReturnUrl());
+        // 支付宝异步通知地址
+        pagePayRequest.setNotifyUrl(alipayProperties.getNotifyUrl());
         pagePayRequest.setBizModel(model);
 
         // 这个过程会产生订单生成失败的情况

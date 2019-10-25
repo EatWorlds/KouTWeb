@@ -23,23 +23,20 @@ import java.util.Map;
 
 
 /**
- *
- * 2019-09-16
- *
- * @author dimple
+ * @ClassName LoginController
+ * @Description: 登录登出的操作
  *
  * @RestController == @Controller + @ResponseBody，需要注意的是使用这个注解代表着整个类都是如此
- *
- * 当然 @Controller & @ResponseBody 还是可以使用的
- *
- */
+ *  *
+ *  * 当然 @Controller & @ResponseBody 还是可以使用的
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @RestController
 @RequestMapping("/v1")
 public class LoginController {
     private Logger logger = LoggerFactory.getLogger(LoginController.class);
-
-    @Autowired
-    private MessageCodeStorage messageCodeStorage;
 
     @Autowired
     private ResponseHelperUtil responseHelperUtil;
@@ -68,7 +65,7 @@ public class LoginController {
     @AuthIgnore
     public ResponseBean login(@RequestParam String username, @RequestParam String password) {
 
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
 
@@ -79,7 +76,7 @@ public class LoginController {
             UserInfoBean userInfoBean = userService.findUserByEmail(username);
             logger.info("result ==" + userInfoBean);
             if (userInfoBean == null) {
-                throw new MessageException(messageCodeStorage.user_not_exists_error);
+                throw new MessageException(MessageCodeStorage.user_not_exists_error);
             }
 
             // token已存在，则表示用户已经登录
@@ -88,13 +85,13 @@ public class LoginController {
                 if (bases.getSystemSeconds() - userInfoBean.getLast_login() > ConstantConfigure.TOKEN_INVALID_TIME) {
                     userService.cleanUserToken(userInfoBean.getToken());
                 } else {
-                    throw new MessageException(messageCodeStorage.user_already_login_error);
+                    throw new MessageException(MessageCodeStorage.user_already_login_error);
                 }
             }
 
             // 验证密码是否正确
             if (!userInfoModel.isPasswordRight(password,userInfoBean.getPassword())) {
-                throw new MessageException(messageCodeStorage.user_login_email_password_error);
+                throw new MessageException(MessageCodeStorage.user_login_email_password_error);
             }
 
             // 创建token
@@ -129,7 +126,7 @@ public class LoginController {
      */
     @RequestMapping(value = "/user/logout", method = RequestMethod.POST)
     public ResponseBean logout(@RequestParam String email) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
             logger.info("logout = " + email);
@@ -143,7 +140,7 @@ public class LoginController {
             // token不存在，则用户未登录
             String token = userInfoBean.getToken();
             if (StringUtils.isEmpty(token)) {
-                throw new MessageException(messageCodeStorage.user_not_login_error);
+                throw new MessageException(MessageCodeStorage.user_not_login_error);
             }
 
             userService.cleanUserToken(token);

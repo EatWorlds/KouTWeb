@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 记录用户验证码的数据表
+ * @author xuyue
  */
 @Data
 public class UserVerityCodeBean {

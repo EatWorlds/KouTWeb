@@ -157,7 +157,8 @@ public class Bases {
      */
     public int getCurrentMonthTime(int day,int hour, int min, int second) {
         Calendar cal = new GregorianCalendar();
-        cal.set(Calendar.DAY_OF_MONTH, day);// 设置为1号,当前日期即为本月第一天
+        // 设置为1号,当前日期即为本月第一天
+        cal.set(Calendar.DAY_OF_MONTH, day);
         cal.set(Calendar.HOUR_OF_DAY, hour);
         cal.set(Calendar.MINUTE, min);
         cal.set(Calendar.SECOND, second);

@@ -52,9 +52,6 @@ public class WxPayController extends AbstractWxPayApiController {
     private String notifyUrl;
 
     @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private ResponseHelperUtil responseHelperUtil;
 
 
@@ -107,7 +104,7 @@ public class WxPayController extends AbstractWxPayApiController {
                                   @RequestParam("total_fee") String totalFee) {
 
         if (StrKit.isBlank(totalFee)) {
-            return responseHelperUtil.returnMessage(messageCodeStorage.success_code);
+            return responseHelperUtil.returnMessage(MessageCodeStorage.success_code);
         }
 
         String ip = IpKit.getRealIp(request);
@@ -157,7 +154,7 @@ public class WxPayController extends AbstractWxPayApiController {
                 request.getSession().getServletContext().getRealPath("/") + File.separator + name);
         if (encode) {
             //在页面上显示
-            return responseHelperUtil.returnMessage(messageCodeStorage.success_code,name);
+            return responseHelperUtil.returnMessage(MessageCodeStorage.success_code,name);
 //            return new AjaxResult().success(name);
         }
         return null;

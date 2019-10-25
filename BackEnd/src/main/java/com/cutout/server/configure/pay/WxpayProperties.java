@@ -9,6 +9,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import javax.annotation.PostConstruct;
 
+/**
+ * @ClassName WxpayProperties
+ * @Description: 获取配置文件中 pay.wxpay1的内容
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Data
 @Slf4j
 @ConfigurationProperties(prefix = "pay.wxpay1")

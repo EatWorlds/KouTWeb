@@ -3,13 +3,19 @@ package com.cutout.server.configure.message;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.stereotype.Component;
 
-@Component
+/**
+ * @ClassName MessageCodeStorage
+ * @Description: 消息返回常量类
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 public class MessageCodeStorage {
 
     /**
      *messagecode :100000  messagevalue :请求成功
      */
-    public final String success_code="success_code|100000|请求成功";
+    public static  final String success_code="success_code|100000|请求成功";
 
     /**
      *messagecode :100001  messagevalue :邮箱或者密码为空
@@ -29,12 +35,12 @@ public class MessageCodeStorage {
     /**
      *messagecode :100004  messagevalue :注册失败
      */
-    public final String user_register_failed ="user_register_failed|100004|注册失败";
+    public static final String user_register_failed ="user_register_failed|100004|注册失败";
 
     /**
      *messagecode :100005  messagevalue :邮箱格式不正确
      */
-    public final String user_email_invalid ="user_email_invalid|100005|邮箱格式不正确";
+    public static final String user_email_invalid ="user_email_invalid|100005|邮箱格式不正确";
 
     /**
      * messagecode :100006  messagevalue :邮箱或者密码不正确

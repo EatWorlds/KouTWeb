@@ -24,18 +24,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author dimple
- *
- * 更新用户相关信息：修改用户信息，忘记密码
- */
+ * @ClassName UpdateController
+ * @Description: 更新用户信息
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @RestController
 @RequestMapping("/v1")
 public class UpdateController {
 
     private Logger logger = LoggerFactory.getLogger(UpdateController.class);
-
-    @Autowired
-    private MessageCodeStorage messageCodeStorage;
 
     @Autowired
     private ResponseHelperUtil responseHelperUtil;
@@ -62,7 +61,7 @@ public class UpdateController {
     @RequestMapping(value = "/user/{id}", method = RequestMethod.PATCH)
     @AuthIgnore
     public ResponseBean update(@PathVariable("id") String id, @RequestParam(defaultValue = "") String oriEmail, UserInfoBean userInfoBean) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         try {
             logger.info("update id = " + id);
             logger.info("update oriEmail = " + oriEmail);
@@ -84,7 +83,7 @@ public class UpdateController {
     @RequestMapping(value = "/VerifiedCode", method = RequestMethod.GET)
     @AuthIgnore
     public ResponseBean getVerifiedCode(@RequestParam String email) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         UserVerityCodeBean userVerityCodeBean = null;
         try {
             logger.info("getVerifiedCode email = " + email);
@@ -97,7 +96,7 @@ public class UpdateController {
                 int lastTime = userVerityCodeBean.getUpdate_time();
                 // 请求时间在60之内的，提示操作过于频繁
                 if (bases.getSystemSeconds() - lastTime < ConstantConfigure.ONE_MINUTE_TIMES) {
-                    throw new MessageException(messageCodeStorage.request_busy);
+                    throw new MessageException(MessageCodeStorage.request_busy);
                 }
 
                 userVerityCodeBean = verifiedCodeService.updateVerityCodeByEmail(userVerityCodeBean);
@@ -122,16 +121,16 @@ public class UpdateController {
     @RequestMapping(value = "/email/{email}", method = RequestMethod.PATCH)
     @AuthIgnore
     public ResponseBean resendCheckEmail(@PathVariable("email") String email) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
             logger.info("resendCheckEmail = " + email);
             if (StringUtils.isEmpty(email)) {
-                throw new MessageException(messageCodeStorage.user_email_empty);
+                throw new MessageException(MessageCodeStorage.user_email_empty);
             }
             UserInfoBean userInfoBean = userService.findUserByEmail(email);
             if (userInfoBean == null) {
-                throw new MessageException(messageCodeStorage.user_not_exists_error);
+                throw new MessageException(MessageCodeStorage.user_not_exists_error);
             }
 
             int timeDiff = bases.getSystemSeconds() - userInfoBean.getCode_time();
@@ -139,7 +138,7 @@ public class UpdateController {
 
             // 1分钟之内不允许重复点击链接
             if (timeDiff < ConstantConfigure.ONE_MINUTE_TIMES) {
-                throw new MessageException(messageCodeStorage.request_busy);
+                throw new MessageException(MessageCodeStorage.request_busy);
             }
 
             // 更新用户邮箱验证码

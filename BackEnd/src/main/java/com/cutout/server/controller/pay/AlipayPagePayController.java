@@ -55,9 +55,6 @@ public class AlipayPagePayController {
     @Autowired
     private ResponseHelperUtil responseHelperUtil;
 
-    @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
     /**
      *
      * @param response
@@ -69,7 +66,7 @@ public class AlipayPagePayController {
      */
     @PostMapping("/pagePay")
     public ResponseBean alipayPage(HttpServletResponse response, String email, int type,ProductDetailBean productDetailBean) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> map = new HashMap<>();
         try {
             String form = alipayService.createPagePayOrder(email,type,productDetailBean);
@@ -79,11 +76,11 @@ public class AlipayPagePayController {
             response.getWriter().flush();
             response.getWriter().close();
         } catch (AlipayApiException alipayException) {
-            message = messageCodeStorage.user_create_order_failed;
+            message = MessageCodeStorage.user_create_order_failed;
         } catch (IOException ioException){
-            message = messageCodeStorage.user_create_order_failed;
+            message = MessageCodeStorage.user_create_order_failed;
         } catch (Exception e) {
-            message = messageCodeStorage.user_create_order_failed;
+            message = MessageCodeStorage.user_create_order_failed;
         }
         return responseHelperUtil.returnMessage(message,map);
     }

@@ -26,10 +26,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author dimple
- *
- * 注册逻辑
- */
+ * @ClassName RegisterController
+ * @Description: 注册，验证注册链接
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @RestController
 @RequestMapping("/v1")
 public class RegisterController {
@@ -43,9 +45,6 @@ public class RegisterController {
 
     @Autowired
     private ResponseHelperUtil responseHelperUtil;
-
-    @Autowired
-    private MessageCodeStorage messageCodeStorage;
 
     @Autowired
     private UserInfoModel userInfoModel;
@@ -68,7 +67,7 @@ public class RegisterController {
     @AuthIgnore
     public ResponseBean register(@RequestParam String email,@RequestParam String password,@RequestParam int code) {
 
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
             logger.info("register");
@@ -80,7 +79,7 @@ public class RegisterController {
             UserInfoBean userInfoBean = userService.findUserByEmail(email);
             logger.info("result ==" + userInfoBean);
             if (userInfoBean != null) {
-                throw new MessageException(messageCodeStorage.user_login_exists_error);
+                throw new MessageException(MessageCodeStorage.user_login_exists_error);
             }
 
             // 验证校验码是否正确，是否超时
@@ -94,7 +93,7 @@ public class RegisterController {
             // 没存储成功，返回注册失败
             if (userInfoBean == null) {
                 userService.removeUser(email);
-                throw new MessageException(messageCodeStorage.user_register_failed);
+                throw new MessageException(MessageCodeStorage.user_register_failed);
             }
 
             // 发送一封激活的链接
@@ -107,7 +106,7 @@ public class RegisterController {
         } catch (Exception e) {
             // 注册失败，删除mongodb里的数据，重新注册
             userService.removeUser(email);
-            message = messageCodeStorage.user_register_failed;
+            message = MessageCodeStorage.user_register_failed;
         }
 
         return responseHelperUtil.returnMessage(message,result);
@@ -122,14 +121,14 @@ public class RegisterController {
     @RequestMapping(value = "/user/{code}", method = RequestMethod.GET)
     @AuthIgnore
     public ResponseBean checkCode(@PathVariable("code") String code) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> result = new HashMap<>();
         try {
 
             logger.info("code = " + code);
             UserInfoBean userInfoBean = userService.findUserByCode(code);
             if (userInfoBean == null) {
-                throw new MessageException(messageCodeStorage.user_login_check_code_error);
+                throw new MessageException(MessageCodeStorage.user_login_check_code_error);
             }
 
             int timeDiff = bases.getSystemSeconds() - userInfoBean.getCode_time();
@@ -138,7 +137,7 @@ public class RegisterController {
 
             // 超过24小时，直接显示失效
             if (timeDiff > ConstantConfigure.TWENTY_FOUR_HOURS_TIMES) {
-                throw new MessageException(messageCodeStorage.user_login_check_code_invalid);
+                throw new MessageException(MessageCodeStorage.user_login_check_code_invalid);
             }
 
             // 还没验证过，则进行验证，否则直接返回成功

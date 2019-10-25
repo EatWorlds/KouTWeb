@@ -41,17 +41,23 @@ public class PayConfigurer extends WebMvcConfigurationSupport {
         FastJsonConfig config = new FastJsonConfig();
         config.setSerializerFeatures(
 
-                SerializerFeature.WriteMapNullValue, // 保留map空的字段
+                // 保留map空的字段
+                SerializerFeature.WriteMapNullValue,
 
-                SerializerFeature.WriteNullStringAsEmpty, // 将String类型的null转成""
+                // 将String类型的null转成""
+                SerializerFeature.WriteNullStringAsEmpty,
 
-                SerializerFeature.WriteNullNumberAsZero, // 将Number类型的null转成0
+                // 将Number类型的null转成0
+                SerializerFeature.WriteNullNumberAsZero,
 
-                SerializerFeature.WriteNullListAsEmpty, // 将List类型的null转成[]
+                // 将List类型的null转成[]
+                SerializerFeature.WriteNullListAsEmpty,
 
-                SerializerFeature.WriteNullBooleanAsFalse, // 将Boolean类型的null转成false
+                // 将Boolean类型的null转成false
+                SerializerFeature.WriteNullBooleanAsFalse,
 
-                SerializerFeature.DisableCircularReferenceDetect);// 避免循环引用
+                // 避免循环引用
+                SerializerFeature.DisableCircularReferenceDetect);
 
         converter.setFastJsonConfig(config);
         converter.setDefaultCharset(Charset.forName("UTF-8"));

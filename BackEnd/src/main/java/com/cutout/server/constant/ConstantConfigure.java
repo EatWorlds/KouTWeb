@@ -2,6 +2,13 @@ package com.cutout.server.constant;
 
 import org.springframework.stereotype.Component;
 
+/**
+ * @ClassName ConstantConfigure
+ * @Description: 常量类，后续从数据库获取
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Component
 public class ConstantConfigure {
 

@@ -40,9 +40,6 @@ public class TestController {
     private Logger logger = LoggerFactory.getLogger(TestController.class);
 
     @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private ResponseHelperUtil responseHelperUtil;
 
     @Autowired
@@ -72,7 +69,7 @@ public class TestController {
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     @AuthIgnore
     public ResponseBean getTestInfo(@RequestParam String info) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
 
         try {
             UserInfoBean userInfoBean = userService.findUserByEmail(info);
@@ -96,7 +93,7 @@ public class TestController {
     @RequestMapping(value = "/test1", method = RequestMethod.GET)
     @AuthIgnore
     public ResponseBean getTestInfo1(@RequestParam String info, HttpServletRequest request) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
 
         try {
 //            Object object = request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
@@ -125,7 +122,7 @@ public class TestController {
 
     @RequestMapping(value = "/test2", method = RequestMethod.GET)
     public void getTestInfo2(@RequestParam String info, HttpServletResponse response) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
 
         try {
             response.sendRedirect("https://www.baidu.com");

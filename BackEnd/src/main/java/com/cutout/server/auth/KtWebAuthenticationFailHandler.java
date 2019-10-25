@@ -13,6 +13,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @ClassName KtWebAuthenticationFailHandler
+ * @Description: 登录失败的处理
+ * @Author xuyue
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Component
 public class KtWebAuthenticationFailHandler extends SimpleUrlAuthenticationFailureHandler {
 
@@ -25,7 +32,7 @@ public class KtWebAuthenticationFailHandler extends SimpleUrlAuthenticationFailu
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
 
         String result = exception.getMessage();
-        logger.info("onAuthenticationFailure " + result);
+//        logger.info("onAuthenticationFailure " + result);
         responseMsgUtil.out(response,exception.getMessage());
     }
 }

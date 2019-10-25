@@ -19,9 +19,6 @@ public class UserServiceImpl implements UserService {
     private UUIDUtil uuidUtil;
 
     @Autowired
-    private UserService userService;
-
-    @Autowired
     private Bases bases;
 
     @Override

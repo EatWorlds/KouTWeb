@@ -8,6 +8,13 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @ClassName MessageCodeConfigure
+ * @Description: 组装消息体
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Component
 public class MessageCodeConfigure {
 
@@ -25,8 +32,9 @@ public class MessageCodeConfigure {
         //否则从Storage中获取字符串进行组装成BEAN，然后返回
         String[] strings = bases.split(messageKey, "|");
 
-        if(messageMap.containsKey(strings[0]))
+        if(messageMap.containsKey(strings[0])) {
             return messageMap.get(strings[0]);
+        }
 
         MessageCodeBean messageCodeBean = new MessageCodeBean();
         messageCodeBean.setMessageKey(strings[0]);

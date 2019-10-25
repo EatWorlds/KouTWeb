@@ -10,6 +10,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * @ClassName UserInfoBean
+ * @Description: 用户基本信息
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @Data
 @Document
 public class UserInfoBean implements UserDetails {

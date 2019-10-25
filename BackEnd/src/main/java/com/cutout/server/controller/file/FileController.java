@@ -1,6 +1,5 @@
 package com.cutout.server.controller.file;
 
-import com.alibaba.fastjson.JSON;
 import com.cutout.server.configure.exception.MessageException;
 import com.cutout.server.configure.message.MessageCodeStorage;
 import com.cutout.server.constant.ConstantConfigure;
@@ -30,8 +29,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 文件上传
- */
+ * @ClassName FileController
+ * @Description: 文件上传、下载
+ * @Author Dimple
+ * @Date 2019/10/25 0025
+ * @Version V1.0
+**/
 @RestController
 @RequestMapping("/v1")
 public class FileController {
@@ -45,9 +48,6 @@ public class FileController {
     private ResponseHelperUtil responseHelperUtil;
 
     @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private FileBase fileBase;
 
     @Autowired
@@ -58,19 +58,19 @@ public class FileController {
 
     @Autowired
     private DownloadService downloadService;
-
+    
     @RequestMapping(value = "/file", method = RequestMethod.POST)
     public ResponseBean fileUpload(@RequestParam("file") MultipartFile files, HttpServletRequest request) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> paths = new HashMap<>();
         try {
             Map<String,Object> attribute = (Map<String, Object>) request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
             if (attribute == null) {
-                throw new MessageException(messageCodeStorage.user_upload_img_failed);
+                throw new MessageException(MessageCodeStorage.user_upload_img_failed);
             }
 
             if (StringUtils.isEmpty(files)) {
-                throw new MessageException(messageCodeStorage.user_upload_file_empty);
+                throw new MessageException(MessageCodeStorage.user_upload_file_empty);
             }
 
             String email = (String)attribute.get("email");
@@ -93,10 +93,10 @@ public class FileController {
             message = messageException.getMessage();
         } catch (IOException ioException) {
             logger.error("IOException",ioException);
-            message = messageCodeStorage.user_upload_img_failed;
+            message = MessageCodeStorage.user_upload_img_failed;
         } catch (Exception e) {
             logger.error("Exception",e);
-            message = messageCodeStorage.user_upload_img_failed;
+            message = MessageCodeStorage.user_upload_img_failed;
         }
 
         return responseHelperUtil.returnMessage(message,paths);
@@ -126,13 +126,13 @@ public class FileController {
      */
     @RequestMapping(value = "/file", method = RequestMethod.PATCH)
     public ResponseBean fileDownload(HttpServletRequest request) {
-        String message = messageCodeStorage.success_code;
+        String message = MessageCodeStorage.success_code;
         Map<String,String> paths = new HashMap<>();
         try {
             Map<String,Object> attribute = (Map<String, Object>) request.getAttribute(ConstantConfigure.USER_ATTRIBUTE_KEY);
             if (attribute == null) {
                 logger.error("FileController fileDownload attribute is null");
-                throw new MessageException(messageCodeStorage.user_download_img_failed);
+                throw new MessageException(MessageCodeStorage.user_download_img_failed);
             }
 
             String email = (String)attribute.get("email");
@@ -141,11 +141,11 @@ public class FileController {
             UserDownloadBean userDownloadBean = userInfoBean.getUserDownload();
             if (userDownloadBean == null) {
                 logger.error("FileController userDownloadBean is null");
-                throw new MessageException(messageCodeStorage.user_download_img_failed);
+                throw new MessageException(MessageCodeStorage.user_download_img_failed);
             }
 
             if (userDownloadBean.getValid_count() <= 0) {
-                throw new MessageException(messageCodeStorage.user_download_img_count_invalid);
+                throw new MessageException(MessageCodeStorage.user_download_img_count_invalid);
             }
 
             userInfoBean = downloadService.updateDownloadByDown(userInfoBean);
@@ -154,7 +154,7 @@ public class FileController {
             message = messageException.getMessage();
         } catch (Exception e) {
             logger.error("FileController fileDownload",e);
-            message = messageCodeStorage.user_download_img_failed;
+            message = MessageCodeStorage.user_download_img_failed;
         }
 
         return responseHelperUtil.returnMessage(message,paths);

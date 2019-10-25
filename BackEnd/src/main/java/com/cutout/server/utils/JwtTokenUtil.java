@@ -47,10 +47,13 @@ public class JwtTokenUtil {
             Date date = new Date(System.currentTimeMillis() + ConstantConfigure.JWT_EXPIRE_TIME);
 
             JWTCreator.Builder builder = JWT.create()
-                    .withAudience(userInfoBean.getEmail()) // 返回该jwt由谁接收
-                    .withClaim(ConstantConfigure.RESULT_EMAIL,userInfoBean.getEmail()) // 自定义
+                    // 返回该jwt由谁接收
+                    .withAudience(userInfoBean.getEmail())
+                    // 自定义
+                    .withClaim(ConstantConfigure.RESULT_EMAIL,userInfoBean.getEmail())
                     .withClaim(ConstantConfigure.RESUTL_ID,userInfoBean.getId())
-                    .withExpiresAt(date); // 过期时间
+                    // 过期时间
+                    .withExpiresAt(date);
             token = builder.sign(algorithm);
 
         } catch (Exception e) {
