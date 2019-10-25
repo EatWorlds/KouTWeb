@@ -26,9 +26,6 @@ public class ProductInfoModel {
     private MongoTemplate mongoTemplate;
 
     @Autowired
-    private MessageCodeStorage messageCodeStorage;
-
-    @Autowired
     private ProductService productService;
 
     public ProductBean getProductInfo(int type) {
@@ -69,17 +66,17 @@ public class ProductInfoModel {
     public void checkProduct(Integer type,ProductDetailBean productDetailBean) throws MessageException {
         // 暂时只支持人脸，所以只有0
         if (type > 0) {
-            throw new MessageException(messageCodeStorage.user_order_type_not_exists);
+            throw new MessageException(MessageCodeStorage.user_order_type_not_exists);
         }
 
         ProductBean productBean = productService.getProductBean(type);
         if (productBean == null) {
-            throw new MessageException(messageCodeStorage.product_info_empty);
+            throw new MessageException(MessageCodeStorage.product_info_empty);
         }
 
         List<ProductDetailBean> productDetailBeans = productBean.getProductBeans();
         if (!productDetailBeans.contains(productDetailBean)) {
-            throw new MessageException(messageCodeStorage.user_order_detail_not_exists);
+            throw new MessageException(MessageCodeStorage.user_order_detail_not_exists);
         }
     }
 

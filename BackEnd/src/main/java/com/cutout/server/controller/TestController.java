@@ -33,8 +33,7 @@ import java.util.Map;
  *
  * 获取产品描述等相关信息
  */
-@RestController
-@RequestMapping("/v1")
+@Controller
 public class TestController {
 
     private Logger logger = LoggerFactory.getLogger(TestController.class);
@@ -131,6 +130,12 @@ public class TestController {
         }
 return;
 
+    }
+
+    @RequestMapping("/index")
+    @AuthIgnore
+    public String indexJumpPage() {
+        return "index";
     }
 
 
