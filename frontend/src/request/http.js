@@ -42,9 +42,9 @@ const errorHandle = (status, other, customStatus) => {
     console.log('状态:' + status + " " + customStatus)
     
     // 自定义状态码判断
-    switch(customStatus) {
-        case 
-    }
+    // switch(customStatus) {
+    //     case 
+    // }
 
     // 状态码判断
     switch (status) {
