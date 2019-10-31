@@ -7,7 +7,7 @@ module.exports = {
   dev: {
     // http://61.160.212.32:49099
     assetsSubDirectory: 'static',
-    assetsPublicPath: './',
+    assetsPublicPath: '/',
     proxyTable: {
       // '/api':{     //这里是公共部分，在调用接口时后面接不相同的部分，/api就相当于http://192.168.0.199:8926/api这一段
       //   target:'http://test.eatsworlds.com:49099',   //这里写的是访问接口的域名和端口号
@@ -49,7 +49,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: './',
+    assetsPublicPath: '/',
 
     /**
      * Source Maps

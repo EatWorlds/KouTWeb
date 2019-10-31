@@ -75,6 +75,7 @@ const errorHandle = (status, other, customStatus) => {
     var instance = axios.create({timeout: 1000 * 12});
     // 设置post请求头
     instance.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    instance.defaults.headers.post['Content-Security-Policy'] = "script-src 'self'; ";
     
     /** 
      * 请求拦截器 
