@@ -9,10 +9,14 @@
                     <div class="gap"></div>
                     <div class="editText">批量编辑</div>
                     <div class="header-placeholder"></div>
-                    <button type="button" class="btn btn-default">
+                    <button type="button" 
+                        class="btn btn-default"
+                        @click="postImages"
+                        >
                         继续上传
-                        <input type="file" multiple="multiple" accept="image/jpeg,image/jpg,image/png" style="display: none;">
+                        <input type="file" ref="files" id="filesID" multiple="multiple" accept="image/jpeg,image/jpg,image/png" @input="changeFile" style="display:none">
                     </button>
+                   
                     <button type="button" style="margin-left:10px" class="btn btn-primary">全部下载</button>
                 </div>
             </div>
@@ -21,18 +25,69 @@
 </template>
 
 <script>
+import ShowImg from '@/assets/js/common/common.js'
 export default {
-    name:'Header'
+    name:'Header',
+    data () {
+        return {
+            fileValue: '',
+            bold:''
+        }
+    }, 
+    methods: {
+        // 继续上传
+        postImages () {
+            $('#filesID').click();  
+        },
+        // 监听 input 事件
+        changeFile (e) {
+            this.fileValue = e.target.value;
+        },
+        // 存储 base64data
+        transitionBase64 () {
+            // 转 base64 
+            var reader = new window.FileReader();
+            reader.readAsDataURL(this.bold); 
+            new Promise((resolve,reject)=>{
+                reader.onloadend = function () {
+                    let base64data = reader.result; 
+                    resolve(base64data);
+                }
+                FileReader.onerror = function () {
+                    reject('err');
+                }
+            }).then((res)=>{
+                // 存储到 vuex
+                this.$store.dispatch('storeImage',res) 
+            })
+        }
+    },
+    watch: {
+        // 监听上传文件
+        fileValue: function(){
+            // 返回图片二进制
+            this.bold =  ShowImg('filesID');  
+            // 转 base64 存储 store
+            this.transitionBase64();
+        }
+    }
 }
 </script>
 
 <style scoped>
+    .navbar{
+        margin-bottom: 0;
+    }
     /* 头部布局 */
     .nav-header{
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+    }
+    /* logo */
+    .navbar-brand{
+        height: 65px;
     }
 
     /* 返回首页 */

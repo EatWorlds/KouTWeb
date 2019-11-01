@@ -1,20 +1,32 @@
 <template>
     <div>
         <KoutuHeader></KoutuHeader>
-        <KoutuSide></KoutuSide>
+        <div class="main">
+            <KoutuSide></KoutuSide>
+            <KoutuShow></KoutuShow>
+        </div>
     </div>
 </template>
 
 <script>
 import KoutuHeader from './components/Header'
 import KoutuSide from './components/Side'
+import KoutuShow from './components/Show'
 
 export default {
   name: 'Koutu',
   components: {
       KoutuHeader,
-      KoutuSide
+      KoutuSide,
+      KoutuShow
   },
 }
 </script>
+
+<style  scoped>
+    .main{
+        display: flex;
+        flex-direction: row;
+    }
+</style>
 
