@@ -126,10 +126,22 @@
              <form id="registeredForm">
                 <div class="form-group" enctype="multipart/form-data">
                   <label for="exampleInputEmail1">邮箱</label>
-                  <input type="email" class="form-control inputTextStyle" id="rInputEmail" placeholder="请输入邮箱">
+                  <input 
+                    type="email" 
+                    class="form-control inputTextStyle" 
+                    id="rInputEmail" 
+                    placeholder="请输入邮箱"
+                    @focus="focusBtnColor"
+                  >
                 </div>
                 <div class="form-group">
-                  <input type="String " class="form-control inputNoCodeStyle" id="rInputCode" placeholder="请输入验证码">
+                  <input 
+                    type="String" 
+                    class="form-control inputNoCodeStyle" 
+                    id="rInputCode" 
+                    placeholder="请输入验证码"
+                    @focus="focusBtnColor"
+                    >
                   <button 
                     id="btnCode"
                     style="margin-left:20px;" 
@@ -139,7 +151,13 @@
                     >获取验证码</button>
                 </div>
                 <div class="form-group">
-                  <input type="password" class="form-control inputNoTextStyle" id="rInputPassword" placeholder="请输入6-30位字母、数字的密码">
+                  <input 
+                    type="password" 
+                    class="form-control inputNoTextStyle" 
+                    id="rInputPassword" 
+                    placeholder="请输入6-30位字母、数字的密码"
+                    @focus="focusBtnColor"
+                  >
                 </div>
                 <div class="hintText" id="registeredHintText" style="display: none">
                   <p>请输入6-30位字母、数字的密码</p>
@@ -147,7 +165,8 @@
                 <div class="form-group">
                   <button 
                   type="submit" 
-                  class="btn btn-default btn_login"
+                  class="btn btn-default btn_registered"
+                  :style="registeredBackground"
                   @click="postRegistereted()"
                   >注册</button>
                 </div>
@@ -251,6 +270,7 @@ export default {
   data () {
     return {
       isShow: false,
+      registeredBackground:'background:#ccc'
     }
   },
   mounted () {
@@ -274,6 +294,12 @@ export default {
        $('#registeredModel').modal({
         keyboard: true
       })
+    },
+
+    // 获取 input 焦点事件
+    focusBtnColor(){
+      console.log()
+      this.registeredBackground = 'background:#2263fe'
     },
 
     // 获取邮箱验证码
@@ -638,6 +664,16 @@ export default {
     font-weight: bold;
     color: #fff;
     background: #2263fe;
+  }
+
+  /* 注册按钮 */
+  .btn_registered{
+    width: 350px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #fff;
+    background: #ccc;
   }
 
   .firstNext{

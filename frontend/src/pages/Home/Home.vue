@@ -3,7 +3,7 @@
         <HomeHeader></HomeHeader>
         <HomeBanner></HomeBanner>
         <div style="height:1200px">
-
+            
         </div>
     </div>
 </template>
@@ -15,8 +15,8 @@ import HomeBanner from './components/Banner'
 export default {
   name: 'Home',
   components: {
-      HomeHeader,
-      HomeBanner
+    HomeHeader,
+    HomeBanner
   },
 }
 </script>
