@@ -132,11 +132,11 @@ return;
 
     }
 
-    @RequestMapping("/index")
-    @AuthIgnore
-    public String indexJumpPage() {
-        return "index";
-    }
+//    @RequestMapping("/index")
+//    @AuthIgnore
+//    public String indexJumpPage() {
+//        return "index";
+//    }
 
 
 }

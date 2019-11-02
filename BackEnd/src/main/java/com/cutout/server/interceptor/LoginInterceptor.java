@@ -65,15 +65,16 @@ public class LoginInterceptor implements HandlerInterceptor {
         }
 
         String token = request.getHeader(ConstantConfigure.USER_TOKEN_KEY);
-
+        logger.info("LoginInterceptor preHandle USER_TOKEN_KEY token = " + token);
         String authorization = request.getHeader(HEADER_STRING);
+        logger.info("LoginInterceptor preHandle HEADER_STRING authorization = " + authorization);
         String tokenNew = authorization.replace(TOKEN_PREFIX,"");
 
 //        String token1 = request.getHeader()
         logger.info("LoginInterceptor preHandle token = " + token);
-        logger.info("LoginInterceptor preHandle authorization = " + tokenNew);
+        logger.info("LoginInterceptor preHandle authorization tokenNew = " + tokenNew);
         token = tokenNew.trim();
-        logger.info("LoginInterceptor preHandle authorization = " + tokenNew.trim());
+        logger.info("LoginInterceptor preHandle token trim = " + token);
         if (StringUtils.isEmpty(token)) {
             responseMsgUtil.out(response,MessageCodeStorage.user_token_invalid);
             return false;
